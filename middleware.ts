@@ -18,6 +18,23 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Admin routes require admin role
+  if (path.startsWith("/admin") || path.startsWith("/api/admin")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/auth", req.url));
+    }
+
+    const userRole = (token as any).role;
+    if (userRole !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Forbidden. Admin access required." },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.next();
+  }
+
   // Protected routes require authentication
   if (
     path.startsWith("/director") ||
@@ -57,6 +74,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/admin/:path*",
     "/director/:path*",
     "/talent/dashboard/:path*",
     "/api/director/:path*",

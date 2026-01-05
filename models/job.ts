@@ -14,6 +14,11 @@ const JobSchema = new mongoose.Schema(
       enum: ["open", "closed"],
       default: "open",
     },
+    // Admin actions
+    hidden: { type: Boolean, default: false, index: true }, // Shadow-hidden by admin
+    closedEarly: { type: Boolean, default: false }, // Closed early by admin
+    adminActionReason: { type: String }, // Reason for admin action
+    adminActionBy: { type: String }, // Admin ID who took action
   },
   { timestamps: true }
 );

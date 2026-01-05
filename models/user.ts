@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
     passwordHash: { type: String },
     role: {
       type: String,
-      enum: ["TALENT", "DIRECTOR"],
+      enum: ["TALENT", "DIRECTOR", "ADMIN"],
       required: true,
       index: true,
     },
@@ -33,6 +33,16 @@ const UserSchema = new mongoose.Schema(
     skills: [{ type: String }],
     experience: [{ type: String }],
     portfolio: [{ type: String }], // Array of media URLs
+    // Admin restrictions
+    frozen: { type: Boolean, default: false, index: true }, // Account frozen (talent/director)
+    shadowLimited: { type: Boolean, default: false }, // Reduced visibility (talent)
+    messagingDisabled: { type: Boolean, default: false }, // Messaging disabled (director)
+    postingFrozen: { type: Boolean, default: false }, // Job posting frozen (director)
+    highRisk: { type: Boolean, default: false, index: true }, // High risk flag (internal, director)
+    // Restriction metadata
+    restrictionReason: { type: String }, // Reason for restriction
+    restrictionExpiresAt: { type: Date }, // When restriction expires (null = indefinite)
+    restrictedBy: { type: String }, // Admin ID who applied restriction
   },
   { timestamps: true }
 );

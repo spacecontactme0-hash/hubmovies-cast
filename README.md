@@ -106,6 +106,8 @@ Global Foundation
 
 ✅ Tailwind design tokens established
 
+✅ SessionProvider wrapper for NextAuth.js
+
 Header / Navigation
 ✅ Fixed transparent cinematic header with backdrop blur
 
@@ -116,6 +118,8 @@ Header / Navigation
 ✅ Navigation: Jobs, Talents, How It Works, Pricing
 
 ✅ Action buttons: Sign In, Get Started
+
+✅ Notification bell with unread count badge
 
 ✅ Fully responsive (hamburger menu on mobile)
 
@@ -134,15 +138,130 @@ Hero Section
 
 Sources: Pexels (image), CSS (sheen)
 
-Role System & Mock Data
-typescript
-type Role = "GUEST" | "TALENT" | "VERIFIED_TALENT" | "PRODUCER";
-type AccessLevel = "FREE" | "PAID";
-✅ 10 mock talents (global names)
+Authentication & Authorization
+✅ NextAuth.js integration with MongoDB adapter
 
-✅ 5 mock producers
+✅ Email/password authentication
 
-✅ 12 mock jobs (varied industries, realistic budgets)
+✅ Email verification system (3-layer enforcement)
+
+✅ Password reset flow
+
+✅ Session management with database storage
+
+✅ Role-based access control (TALENT, DIRECTOR)
+
+✅ Middleware-based route protection
+
+✅ Email verification enforcement (session, middleware, API, UI)
+
+Profile Management
+✅ Talent profile editing with image upload
+
+✅ Profile completion calculation (automatic)
+
+✅ Talent verification tiers (BASIC, COMPLETE, VERIFIED, FEATURED)
+
+✅ Director trust score system
+
+✅ Profile completion enforcement (blocks applications if incomplete)
+
+✅ Cloudinary integration for media uploads
+
+Director Trust System
+✅ Trust score tracking (0-100)
+
+✅ Trust levels: NEW_DIRECTOR, TRUSTED_DIRECTOR, VERIFIED_STUDIO
+
+✅ Trust-based capabilities (job limits, bulk actions, visibility)
+
+✅ Trust score increments based on actions
+
+✅ Director-facing trust panel with improvement suggestions
+
+✅ Talent-facing trust badges and messaging
+
+Job Management
+✅ Public job listings with director trust badges
+
+✅ Job creation with trust-based limits
+
+✅ Job editing functionality
+
+✅ Job visibility weighted by director trust
+
+✅ Job sorting by trust score and deadline
+
+✅ Applied status tracking
+
+Application System
+✅ Multi-step application flow
+
+✅ Media upload (images/videos) to Cloudinary
+
+✅ Application status tracking (submitted, shortlisted, rejected)
+
+✅ Duplicate application prevention
+
+✅ Director application management dashboard
+
+✅ Bulk application status updates (trust-based)
+
+✅ Application detail modals
+
+Messaging System
+✅ Director-to-talent messaging
+
+✅ Message threads grouped by application
+
+✅ In-app notifications for new messages
+
+✅ Message history viewing
+
+✅ Talent message viewing (read-only, replies deferred)
+
+Notifications
+✅ In-app notification system
+
+✅ Notification bell with unread count
+
+✅ Notification dropdown with mark-as-read functionality
+
+✅ Email notifications for application status changes
+
+✅ Notification types: message, application_status, job_posted, system
+
+Pages & Routes
+✅ Landing page with hero section
+
+✅ Jobs listing page
+
+✅ Talents directory page
+
+✅ How It Works page
+
+✅ Pricing page
+
+✅ Talent dashboard with applications
+
+✅ Director dashboard with jobs and applications
+
+✅ Talent profile editing page
+
+✅ Director messages page
+
+✅ Authentication pages (login, signup, verify, reset password)
+
+Role System & Data
+✅ User roles: TALENT, DIRECTOR
+
+✅ Talent verification tiers: BASIC, COMPLETE, VERIFIED, FEATURED
+
+✅ Director trust levels: NEW_DIRECTOR, TRUSTED_DIRECTOR, VERIFIED_STUDIO
+
+✅ MongoDB database integration
+
+✅ Real-time data fetching and updates
 
 ✅ Global marketplace (no region lock)
 
@@ -556,7 +675,83 @@ Use Framer Motion for smooth step transitions.
 
 ## 📝 Recent Changes & Updates
 
-### Latest Update (Authentication & Media Validation)
+### Latest Update: SessionProvider Fix, Notification System, and Missing Components (Current Session)
+
+**Date:** Current Session
+
+**Changes Made:**
+
+1. **SessionProvider Integration**
+   - ✅ Created `web/app/providers.tsx` - SessionProvider wrapper component
+   - ✅ Updated `web/app/layout.tsx` to wrap app with SessionProvider
+   - ✅ Fixed `useSession` error in NotificationBell component
+   - ✅ All components using `useSession` now work correctly
+
+2. **Notification System Implementation**
+   - ✅ Created `web/models/notification.ts` - Notification Mongoose schema
+   - ✅ Created `web/app/components/notifications/notification-dropdown.tsx` - Full notification dropdown UI
+   - ✅ Created `web/app/api/notifications/unread-count/route.ts` - API endpoint for unread count
+   - ✅ Updated `web/app/components/notifications/notification-bell.tsx` - Fixed useSession integration
+   - ✅ Notification system fully functional with real-time updates
+
+3. **Talent Dashboard Components**
+   - ✅ Created `web/app/talent/dashboard/components/application-detail-modal.tsx` - Application detail view
+   - ✅ Created `web/app/talent/dashboard/components/message-thread-modal.tsx` - Message thread viewer
+   - ✅ Both modals follow cinematic design system with proper TypeScript types
+
+4. **API Routes**
+   - ✅ Created `web/app/api/talent/messages/route.ts` - Talent message fetching endpoint
+   - ✅ All API routes properly handle authentication and verification
+
+5. **Build Fixes**
+   - ✅ Fixed duplicate code in `create-casting-modal.tsx`
+   - ✅ Fixed TypeScript errors in modal components
+   - ✅ Fixed type mismatches between components
+   - ✅ All build errors resolved, production build successful
+
+**Files Created:**
+- `web/app/providers.tsx`
+- `web/models/notification.ts`
+- `web/app/components/notifications/notification-dropdown.tsx`
+- `web/app/api/notifications/unread-count/route.ts`
+- `web/app/talent/dashboard/components/application-detail-modal.tsx`
+- `web/app/talent/dashboard/components/message-thread-modal.tsx`
+- `web/app/api/talent/messages/route.ts`
+
+**Files Modified:**
+- `web/app/layout.tsx` - Added SessionProvider wrapper
+- `web/app/components/notifications/notification-bell.tsx` - Fixed useSession usage
+- `web/app/components/create-casting-modal/create-casting-modal.tsx` - Removed duplicate code
+
+**Next Steps & Recommendations:**
+
+1. **Notification Enhancements**
+   - Add real-time notification updates via WebSocket or polling
+   - Add notification preferences (email vs in-app)
+   - Add notification grouping by type
+   - Add "Mark all as read" functionality
+
+2. **Talent Messaging**
+   - Implement talent reply functionality (currently deferred)
+   - Add message read receipts
+   - Add typing indicators
+   - Add file attachments to messages
+
+3. **Performance Optimization**
+   - Optimize notification polling (currently 30s interval)
+   - Add notification caching
+   - Batch notification updates
+   - Implement virtual scrolling for long notification lists
+
+4. **User Experience**
+   - Add notification sound/desktop notifications
+   - Add notification filters (by type, date)
+   - Add notification search functionality
+   - Improve mobile notification experience
+
+---
+
+### Previous Update: Email Verification & Profile Completion (Previous Session)
 
 **Date:** Current Session
 
@@ -728,4 +923,410 @@ Use Framer Motion for smooth step transitions.
 
 ---
 
-**Note:** This section will be updated with each change made to the application. Always document what was changed, why it was changed, and what the next logical steps should be.
+---
+
+## 🔮 Suggested Improvements & Future Enhancements
+
+### High Priority
+
+1. **Talent Reply Functionality**
+   - Currently talents can only view messages, not reply
+   - Implement POST endpoint for talent messages
+   - Update message thread modal with reply input
+   - Add validation and notification system
+
+2. **Real-time Notifications**
+   - Replace polling with WebSocket connections
+   - Implement server-sent events (SSE) for notifications
+   - Add push notifications for mobile devices
+   - Real-time notification badges
+
+3. **Enhanced Search & Filtering**
+   - Add search functionality to jobs listing
+   - Filter jobs by type, location, budget range
+   - Filter talents by role, skills, location
+   - Advanced search with multiple criteria
+
+4. **Application Analytics**
+   - Director dashboard analytics (views, applications, conversion rates)
+   - Talent dashboard analytics (application success rate)
+   - Job performance metrics
+   - Trust score impact visualization
+
+### Medium Priority
+
+5. **Enhanced Messaging**
+   - File attachments in messages
+   - Message read receipts
+   - Typing indicators
+   - Message search functionality
+   - Message archiving
+
+6. **Profile Enhancements**
+   - Video portfolio uploads
+   - Social media links
+   - References/recommendations system
+   - Skills verification
+   - Portfolio categorization
+
+7. **Job Posting Enhancements**
+   - Job templates for common roles
+   - Bulk job posting
+   - Job scheduling (post later)
+   - Job analytics dashboard
+   - Application deadline reminders
+
+8. **Trust System Enhancements**
+   - Trust score history graph
+   - Trust score breakdown by action type
+   - Trust score recovery mechanisms
+   - Trust-based job promotion features
+   - Trust score leaderboard (optional)
+
+### Low Priority
+
+9. **Social Features**
+   - Talent following system
+   - Director favorites
+   - Public talent portfolios
+   - Talent recommendations
+   - Community features
+
+10. **Mobile App**
+    - React Native mobile app
+    - Push notifications
+    - Mobile-optimized workflows
+    - Offline capabilities
+    - Mobile-specific features
+
+11. **Advanced Features**
+    - Video interview scheduling
+    - Calendar integration
+    - Contract management
+    - Payment processing
+    - Escrow system
+
+12. **Admin Panel**
+    - Full admin dashboard
+    - User management
+    - Trust score overrides
+    - Content moderation
+    - Analytics and reporting
+
+### Technical Improvements
+
+13. **Performance**
+    - Implement Redis caching
+    - Database query optimization
+    - Image CDN optimization
+    - Code splitting improvements
+    - Lazy loading enhancements
+
+14. **Testing**
+    - Unit tests for utility functions
+    - Integration tests for API routes
+    - E2E tests for critical flows
+    - Performance testing
+    - Security testing
+
+15. **Monitoring & Analytics**
+    - Error tracking (Sentry)
+    - Performance monitoring
+    - User analytics
+    - A/B testing framework
+    - Feature flags
+
+16. **Security Enhancements**
+    - Rate limiting implementation
+    - CSRF protection
+    - File upload security scanning
+    - API rate limiting per user
+    - Two-factor authentication
+
+---
+
+## 📚 Key Files & Patterns
+
+### Critical Files for Understanding the System
+
+**Authentication:**
+- `web/app/api/auth/[...nextauth]/route.ts` - NextAuth configuration
+- `web/lib/auth-helpers.ts` - Auth utility functions
+- `web/middleware.ts` - Route protection and verification enforcement
+
+**Trust System:**
+- `web/lib/director-trust.ts` - Core trust logic, capabilities, badges
+- `web/models/user.ts` - User model with trustScore field
+- `web/app/components/director/dashboard/components/director-trust-panel.tsx` - Trust UI
+
+**Profile System:**
+- `web/lib/profile-completion.ts` - Profile completion calculation
+- `web/app/api/talent/profile/route.ts` - Profile CRUD operations
+- `web/app/talent/profile/page.tsx` - Profile editing UI
+
+**Notification System:**
+- `web/models/notification.ts` - Notification schema
+- `web/app/api/notifications/route.ts` - Notification API
+- `web/app/components/notifications/notification-dropdown.tsx` - Notification UI
+
+**Messaging:**
+- `web/models/message.ts` - Message schema
+- `web/app/api/director/messages/route.ts` - Director message sending
+- `web/app/api/talent/messages/route.ts` - Talent message fetching
+
+### Design Patterns
+
+**Modal Pattern:**
+- All modals use Framer Motion for animations
+- Consistent backdrop blur and dark overlay
+- Modal shell component for reusable structure
+
+**API Pattern:**
+- All API routes use `requireVerifiedUser()` or `getUserId()` for auth
+- Consistent error handling and response formats
+- MongoDB connection caching via `connectDB()`
+
+**Component Pattern:**
+- Client components marked with `"use client"`
+- Server components for data fetching
+- Consistent TypeScript types across components
+
+**State Management:**
+- React hooks for local state
+- Server-side data fetching with Next.js App Router
+- Session state via NextAuth.js
+
+---
+
+---
+
+## 🗄️ Database Models
+
+### User Model (`models/user.ts`)
+- **Fields:**
+  - `email` (String, unique, indexed) - User email address
+  - `passwordHash` (String) - Bcrypt hashed password
+  - `role` (Enum: "TALENT" | "DIRECTOR" | "ADMIN", indexed) - User role
+  - `emailVerified` (Date) - Email verification timestamp
+  - `name` (String) - User display name
+  - `image` (String) - Profile image URL
+  - `resetPasswordToken` (String) - Password reset token
+  - `resetPasswordExpires` (Date) - Token expiration
+  - `profileCompletion` (Number, 0-100) - Talent profile completion %
+  - `verificationTier` (Enum: "BASIC" | "COMPLETE" | "VERIFIED" | "FEATURED") - Talent tier
+  - `trustScore` (Number, 0-100) - Director trust score
+  - `phone`, `bio`, `primaryRole`, `skills[]`, `experience[]`, `portfolio[]` - Talent profile fields
+- **Indexes:** email, role, verificationTier
+
+### Job Model (`models/job.ts`)
+- **Fields:**
+  - `title`, `description`, `type`, `location`, `budget`, `deadline`
+  - `directorId` (ObjectId, indexed) - Director who posted
+  - `status` (Enum: "active" | "closed" | "draft")
+  - `requirements[]`, `tags[]`
+- **Indexes:** directorId, status, deadline
+
+### Application Model (`models/application.ts`)
+- **Fields:**
+  - `jobId` (ObjectId, indexed) - Job applied to
+  - `talentId` (ObjectId, indexed) - Talent who applied
+  - `answer` (String) - Application answer
+  - `mediaUrl` (String) - Uploaded media URL
+  - `status` (Enum: "submitted" | "shortlisted" | "rejected")
+- **Indexes:** jobId, talentId, status
+
+### Message Model (`models/message.ts`)
+- **Fields:**
+  - `applicationId` (ObjectId, indexed) - Related application
+  - `jobId` (ObjectId) - Related job
+  - `directorId` (ObjectId) - Director sender
+  - `talentId` (ObjectId) - Talent recipient
+  - `senderId` (ObjectId) - Actual sender
+  - `senderRole` (Enum: "director" | "talent")
+  - `message` (String) - Message content
+  - `deliveryMethod` (Enum: "in-app" | "email" | "phone")
+  - `sent` (Boolean), `sentAt` (Date)
+- **Indexes:** applicationId, directorId, talentId
+
+### Notification Model (`models/notification.ts`)
+- **Fields:**
+  - `userId` (String, indexed) - Recipient user ID
+  - `type` (Enum: "message" | "application_status" | "job_posted" | "system", indexed)
+  - `entityId` (String, indexed) - Related entity ID
+  - `title` (String) - Notification title
+  - `message` (String) - Notification message
+  - `read` (Boolean, default: false, indexed)
+- **Indexes:** userId, userId+read, userId+createdAt
+
+### Session Model (`models/session.ts`)
+- NextAuth.js session storage
+- **Fields:** sessionToken, userId, expires
+- **Indexes:** sessionToken, userId, expires
+
+### VerificationToken Model (`models/verification-token.ts`)
+- Email verification token storage
+- **Fields:** identifier, token, expires
+- **Indexes:** token, identifier+token
+
+### AuditLog Model (`models/audit-log.ts`)
+- Admin action audit trail
+- **Fields:**
+  - `actorId` (String, indexed) - Admin who performed action
+  - `actorRole` (Enum: "ADMIN" | "SYSTEM") - Actor role
+  - `targetUserId` (String, indexed) - User affected
+  - `targetUserRole` (Enum: "TALENT" | "DIRECTOR") - Target user role
+  - `actionType` (Enum, indexed) - Type of action performed
+  - `beforeState` (Mixed) - State before action
+  - `afterState` (Mixed) - State after action
+  - `reason` (String) - Mandatory reason for action
+  - `metadata` (Mixed) - Additional action metadata
+- **Indexes:** targetUserId+createdAt, actorId+createdAt, actionType+createdAt
+
+---
+
+## 🔌 API Reference
+
+### Authentication Endpoints
+- `POST /api/auth/[...nextauth]` - NextAuth.js handler
+- `POST /api/auth/complete` - Complete signup flow
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/resend-verification` - Resend verification email
+- `POST /api/auth/reset-password` - Reset password with token
+
+### Job Endpoints
+- `GET /api/jobs` - Get public job listings (sorted by trust + deadline)
+- `GET /api/director/jobs` - Get director's jobs
+- `POST /api/director/jobs` - Create new job (trust-based limits)
+- `PATCH /api/director/jobs/[id]` - Update job
+- `DELETE /api/director/jobs/[id]` - Delete job
+
+### Application Endpoints
+- `POST /api/apply` - Submit job application
+- `GET /api/apply/status?jobId=...` - Check if user applied
+- `GET /api/director/applications` - Get director's applications
+- `PATCH /api/director/applications/[id]` - Update application status
+- `PATCH /api/director/applications/bulk` - Bulk update (trust-based)
+- `GET /api/talent/applications` - Get talent's applications
+
+### Profile Endpoints
+- `GET /api/talent/profile` - Get talent profile
+- `PATCH /api/talent/profile` - Update talent profile
+- `GET /api/talent/profile/completion` - Get profile completion data
+- `GET /api/director/profile` - Get director profile/trust
+
+### Messaging Endpoints
+- `GET /api/messages` - Get messages (universal, filtered by user)
+- `POST /api/director/messages` - Send message (director → talent)
+- `GET /api/director/messages/threads` - Get message threads (director)
+- `GET /api/talent/messages?applicationId=...` - Get messages (talent)
+
+### Notification Endpoints
+- `GET /api/notifications` - Get notifications (with filters)
+- `PATCH /api/notifications` - Mark notifications as read
+- `GET /api/notifications/unread-count` - Get unread count
+
+### Upload Endpoints
+- `POST /api/upload` - Upload file to Cloudinary
+
+### Admin Endpoints
+- `GET /api/admin/trust/talent/[id]` - Get talent trust data for admin
+- `GET /api/admin/trust/director/[id]` - Get director trust data for admin
+- `POST /api/admin/trust/override` - Apply trust override (requires admin role)
+
+---
+
+---
+
+## 🔐 Admin Trust Override System
+
+### Overview
+
+The admin trust override system allows administrators to understand why users have specific trust levels and safely change them. All actions are logged and require mandatory confirmation.
+
+### Entry Points
+
+- `/admin/trust/talent/[id]` - Manage talent trust/verification tier
+- `/admin/trust/director/[id]` - Manage director trust score and level
+
+### Features
+
+1. **Identity Header**
+   - User avatar, name, email, role
+   - Current tier/trust score display
+   - Status badges (Verified, High Risk, Featured)
+   - Always visible at top of page
+
+2. **Trust Breakdown Panel (Read Only)**
+   - Explains machine logic behind trust scores
+   - Shows individual score components
+   - Color-coded (green for positive, red for negative)
+   - No editing capability
+
+3. **Timeline/History Panel**
+   - Complete audit trail of trust changes
+   - Shows action type, before/after states, reason, actor
+   - Chronological order (newest first)
+   - Builds confidence and accountability
+
+4. **Trust Override Action Panel**
+   - **Change Trust Tier**: Select new tier with mandatory reason
+   - **Override Trust Score**: Manually set trust score (directors only)
+   - **Apply Restrictions**: Freeze posting, disable messaging, etc. (coming soon)
+   - **Flags**: Internal flags for ranking logic (coming soon)
+
+5. **Confirmation Flow**
+   - Mandatory confirmation modal for all actions
+   - Shows action description and reason
+   - Warning about logging and permanence
+   - No silent actions
+
+### API Endpoints
+
+- `GET /api/admin/trust/talent/[id]` - Get talent trust data
+- `GET /api/admin/trust/director/[id]` - Get director trust data
+- `POST /api/admin/trust/override` - Apply trust override
+
+### Database Models
+
+**AuditLog Model** (`models/audit-log.ts`):
+- Tracks all admin actions
+- Fields: actorId, actorRole, targetUserId, actionType, beforeState, afterState, reason, metadata
+- Indexed for performance queries
+
+### Security
+
+- Admin routes protected by middleware
+- Only users with `role: "ADMIN"` can access
+- All actions require authentication
+- All actions logged to audit trail
+- Mandatory confirmation prevents accidental changes
+
+### Visual Design Rules
+
+- No distracting animations
+- No gradients
+- Minimal motion
+- Red for destructive actions
+- Gold/neutral for tier changes
+- Serious, professional aesthetic
+
+### Components
+
+- `TrustOverridePage` - Main page component
+- `IdentityHeader` - User identity display
+- `TrustBreakdownPanel` - Read-only trust breakdown
+- `TimelinePanel` - History/audit log display
+- `TrustOverridePanel` - Action panel for overrides
+- `ConfirmActionModal` - Mandatory confirmation modal
+
+### Future Enhancements
+
+- Restrictions system (freeze posting, disable messaging, etc.)
+- Flags system (high risk, under review, repeat offender)
+- Duration-based restrictions (24h, 7 days, indefinite)
+- Moderation inbox for reported users
+- Bulk actions for multiple users
+
+---
+
+**Note:** This README is continuously updated. Always check the "Recent Changes & Updates" section for the latest modifications. When making changes, document them here following the established format.
