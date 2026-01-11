@@ -29,10 +29,32 @@ export default function PasswordLoginPage() {
       if (result?.error) {
         setError("Invalid email or password");
       } else if (result?.ok) {
-        // Redirect and let middleware handle role-based routing
-        // The session will be available after redirect
-        router.push("/");
-        router.refresh();
+        // Fetch session to determine user role for redirect
+        try {
+          const sessionRes = await fetch("/api/auth/session");
+          if (sessionRes.ok) {
+            const session = await sessionRes.json();
+            const userRole = session?.user?.role;
+            
+            // Redirect based on role
+            if (userRole === "ADMIN") {
+              router.push("/admin/jobs");
+            } else if (userRole === "DIRECTOR") {
+              router.push("/director/dashboard");
+            } else if (userRole === "TALENT") {
+              router.push("/talent/dashboard");
+            } else {
+              router.push("/");
+            }
+          } else {
+            router.push("/");
+          }
+          router.refresh();
+        } catch (sessionError) {
+          // If session fetch fails, redirect to home
+          router.push("/");
+          router.refresh();
+        }
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
