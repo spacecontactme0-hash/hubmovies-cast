@@ -3,16 +3,47 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import SessionLoader from "@/app/components/auth/session-loader";
 
 export default function PasswordLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [establishingSession, setEstablishingSession] = useState(false);
   const [error, setError] = useState("");
+
+  const waitForSession = async (maxAttempts = 30, delay = 500): Promise<any> => {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const sessionRes = await fetch("/api/auth/session", {
+          cache: "no-store",
+          credentials: "include",
+        });
+
+        if (sessionRes.ok) {
+          const session = await sessionRes.json();
+          
+          // Check if session has user data
+          if (session?.user && session.user.email) {
+            return session;
+          }
+        }
+      } catch (error) {
+        // Continue trying
+        console.log(`Session attempt ${attempt} failed, retrying...`);
+      }
+
+      // Wait before next attempt
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+
+    // If we get here, session wasn't established
+    throw new Error("Session establishment timeout");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,18 +59,45 @@ export default function PasswordLoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password");
+        setLoading(false);
       } else if (result?.ok) {
-        // Wait a bit for session to be established, then fetch and redirect
-        setTimeout(async () => {
+        // Show session loader
+        setEstablishingSession(true);
+        setLoading(false);
+
+        try {
+          // Keep trying to establish session until successful
+          const session = await waitForSession(30, 500);
+          
+          if (session?.user) {
+            const userRole = session.user.role;
+            
+            // Redirect based on role
+            if (userRole === "ADMIN") {
+              window.location.href = "/admin/jobs";
+            } else if (userRole === "DIRECTOR") {
+              window.location.href = "/director/dashboard";
+            } else if (userRole === "TALENT") {
+              window.location.href = "/talent/dashboard";
+            } else {
+              window.location.href = "/";
+            }
+          } else {
+            setError("Session established but user data not found. Please try again.");
+            setEstablishingSession(false);
+          }
+        } catch (sessionError) {
+          // Keep retrying - don't give up
+          console.error("Session establishment error, retrying:", sessionError);
+          
+          // Try one more time with longer delay
           try {
-            const sessionRes = await fetch("/api/auth/session", {
-              cache: "no-store",
-            });
-            if (sessionRes.ok) {
-              const session = await sessionRes.json();
-              const userRole = session?.user?.role;
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const session = await waitForSession(20, 750);
+            
+            if (session?.user) {
+              const userRole = session.user.role;
               
-              // Redirect based on role
               if (userRole === "ADMIN") {
                 window.location.href = "/admin/jobs";
               } else if (userRole === "DIRECTOR") {
@@ -50,23 +108,46 @@ export default function PasswordLoginPage() {
                 window.location.href = "/";
               }
             } else {
-              window.location.href = "/";
+              setError("Unable to establish session. Please try logging in again.");
+              setEstablishingSession(false);
             }
-          } catch (sessionError) {
-            // If session fetch fails, redirect to home
-            window.location.href = "/";
+          } catch (retryError) {
+            setError("Session is taking longer than expected. Please wait...");
+            // Continue showing loader and try again in background
+            setTimeout(async () => {
+              try {
+                const session = await waitForSession(40, 1000);
+                if (session?.user) {
+                  const userRole = session.user.role;
+                  if (userRole === "ADMIN") {
+                    window.location.href = "/admin/jobs";
+                  } else if (userRole === "DIRECTOR") {
+                    window.location.href = "/director/dashboard";
+                  } else if (userRole === "TALENT") {
+                    window.location.href = "/talent/dashboard";
+                  } else {
+                    window.location.href = "/";
+                  }
+                }
+              } catch (finalError) {
+                setError("Unable to establish session. Please refresh the page and try again.");
+                setEstablishingSession(false);
+              }
+            }, 2000);
           }
-        }, 500);
+        }
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
+      setEstablishingSession(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] relative flex items-center justify-center p-8">
+    <>
+      {establishingSession && <SessionLoader />}
+      <div className="min-h-screen bg-[var(--bg-main)] relative flex items-center justify-center p-8">
       {/* Noise overlay */}
       <div
         className="fixed inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -195,5 +276,6 @@ export default function PasswordLoginPage() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }
