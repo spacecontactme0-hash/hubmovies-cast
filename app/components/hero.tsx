@@ -66,7 +66,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 80 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.4, ease: "easeOut" }}
-        className="relative z-10 max-w-5xl px-6 text-center pt-8 sm:pt-12 md:pt-16"
+        className="relative z-10 max-w-5xl px-6 text-center pt-12 sm:pt-16 md:pt-20"
       >
         <motion.h1
           initial={{ opacity: 0, scale: 0.94 }}
@@ -83,7 +83,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 1 }}
-          className="text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-10 md:mb-12"
+          className="text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-16"
         >
           HubMovies is a global casting marketplace connecting actors,
           filmmakers, and creative professionals with producers, studios,

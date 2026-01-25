@@ -7,43 +7,48 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-      className="relative border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]"
-    >
+    <footer className="relative border-t border-[var(--border-subtle)] bg-[var(--bg-main)]">
       {/* Subtle background texture */}
       <div
         className="absolute inset-0 opacity-[0.015] pointer-events-none"
         style={{
-          backgroundImage: "url('/noise.png')",
+          backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\'%3E%3Cfilter id=\\'n\\'%3E%3CfeTurbulence type=\\'fractalNoise\\' baseFrequency=\\'0.8\\' numOctaves=\\'4\\' stitchTiles=\\'stitch\\'/%3E%3C/filter%3E%3Crect width=\\'200\\' height=\\'200\\' filter=\\'url(%23n)\\' opacity=\\'0.15\\'/%3E%3C/svg%3E')",
           backgroundRepeat: "repeat",
         }}
       />
 
-      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
-          <div className="lg:col-span-1">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-1"
+          >
             <Link
               href="/"
-              className="inline-block mb-4 font-heading text-xl sm:text-2xl tracking-wide text-white hover:text-[var(--accent-gold)] transition"
+              className="font-heading text-xl sm:text-2xl tracking-wide text-white mb-4 inline-block hover:text-[var(--accent-gold)] transition"
             >
               Hub<span className="text-[var(--accent-gold)]">Movies</span>
             </Link>
-            <p className="text-sm text-[var(--text-secondary)] font-body leading-relaxed max-w-xs">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-xs">
               A global casting marketplace connecting actors, filmmakers, and creative professionals with producers, studios, and brands.
             </p>
-          </div>
+          </motion.div>
 
           {/* Navigation Column */}
-          <div>
-            <h3 className="font-heading text-white mb-4 sm:mb-6 text-sm tracking-wide uppercase">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <h3 className="font-heading text-white text-sm sm:text-base mb-4 tracking-wide">
               Navigation
             </h3>
-            <nav className="flex flex-col gap-3 sm:gap-4">
+            <nav className="flex flex-col gap-3">
               <Link
                 href="/jobs"
                 className="text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
@@ -69,16 +74,21 @@ export default function Footer() {
                 Pricing
               </Link>
             </nav>
-          </div>
+          </motion.div>
 
           {/* Resources Column */}
-          <div>
-            <h3 className="font-heading text-white mb-4 sm:mb-6 text-sm tracking-wide uppercase">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h3 className="font-heading text-white text-sm sm:text-base mb-4 tracking-wide">
               Resources
             </h3>
-            <nav className="flex flex-col gap-3 sm:gap-4">
+            <nav className="flex flex-col gap-3">
               <Link
-                href="/auth"
+                href="/auth/password"
                 className="text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
               >
                 Sign In
@@ -93,17 +103,22 @@ export default function Footer() {
                 href="/auth/forgot-password"
                 className="text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
               >
-                Reset Password
+                Forgot Password
               </Link>
             </nav>
-          </div>
+          </motion.div>
 
           {/* Legal Column */}
-          <div>
-            <h3 className="font-heading text-white mb-4 sm:mb-6 text-sm tracking-wide uppercase">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <h3 className="font-heading text-white text-sm sm:text-base mb-4 tracking-wide">
               Legal
             </h3>
-            <nav className="flex flex-col gap-3 sm:gap-4">
+            <nav className="flex flex-col gap-3">
               <Link
                 href="#"
                 className="text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
@@ -123,42 +138,48 @@ export default function Footer() {
                 Cookie Policy
               </Link>
             </nav>
-          </div>
+          </motion.div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 sm:pt-12 border-t border-[var(--border-subtle)]">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="pt-8 sm:pt-12 border-t border-[var(--border-subtle)]"
+        >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-body text-center sm:text-left">
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] font-body">
               © {currentYear} HubMovies. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
               <a
                 href="#"
-                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--accent-gold)] transition font-body"
+                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
                 aria-label="Twitter"
               >
                 Twitter
               </a>
               <a
                 href="#"
-                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--accent-gold)] transition font-body"
+                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
                 aria-label="LinkedIn"
               >
                 LinkedIn
               </a>
               <a
                 href="#"
-                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-[var(--accent-gold)] transition font-body"
+                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-white transition font-body"
                 aria-label="Instagram"
               >
                 Instagram
               </a>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }
 
