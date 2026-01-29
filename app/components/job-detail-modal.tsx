@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import ApplyFlowModal from "./modals/apply-flow-modal";
 import { getTrustBadge, getTrustStatusText } from "@/lib/director-trust";
 
@@ -24,12 +26,18 @@ export default function JobDetailModal({
   job: Job;
   onClose: () => void;
 }) {
+  const { data: session } = useSession();
   const [applyOpen, setApplyOpen] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(true);
 
   // Get job ID (support both id and _id for backward compatibility)
   const jobId = job._id || job.id || "";
+
+  // Check if user is a talent and if they've paid
+  const user = session?.user as any;
+  const isTalent = user?.role === "TALENT";
+  const hasNotPaid = isTalent && !user?.paymentConfirmed;
 
   // Check if user has already applied to this job
   useEffect(() => {
@@ -41,8 +49,13 @@ export default function JobDetailModal({
     async function checkApplied() {
       try {
         const res = await fetch(`/api/apply/status?jobId=${jobId}`);
-        const data = await res.json();
-        setHasApplied(data.applied || false);
+        if (res.status === 403) {
+          // Payment required
+          setHasApplied(false);
+        } else {
+          const data = await res.json();
+          setHasApplied(data.applied || false);
+        }
       } catch (error) {
         // If error, assume not applied
         setHasApplied(false);
@@ -52,7 +65,7 @@ export default function JobDetailModal({
     }
 
     checkApplied();
-  }, [jobId]);
+  }, [jobId, hasNotPaid]);
 
   return (
     <AnimatePresence>
@@ -136,23 +149,42 @@ export default function JobDetailModal({
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => setApplyOpen(true)}
-                disabled={hasApplied || loadingStatus}
-                className={`px-6 py-3 font-medium transition ${
-                  hasApplied
-                    ? "bg-gray-500 cursor-not-allowed text-gray-300"
-                    : "bg-[var(--accent-gold)] text-black hover:opacity-90"
-                } ${loadingStatus ? "opacity-50 cursor-wait" : ""}`}
-              >
-                {loadingStatus ? "Checking..." : hasApplied ? "Applied" : "Apply Now"}
-              </button>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 border border-white/20 text-white hover:bg-white/10 transition"
-              >
-                Close
-              </button>
+              {hasNotPaid ? (
+                <>
+                  <Link
+                    href="/auth/payment-required"
+                    className="px-6 py-3 bg-[var(--accent-gold)] text-black font-medium hover:opacity-90 transition text-center"
+                  >
+                    Complete Payment
+                  </Link>
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-3 border border-white/20 text-white hover:bg-white/10 transition"
+                  >
+                    Close
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setApplyOpen(true)}
+                    disabled={hasApplied || loadingStatus}
+                    className={`px-6 py-3 font-medium transition ${
+                      hasApplied
+                        ? "bg-gray-500 cursor-not-allowed text-gray-300"
+                        : "bg-[var(--accent-gold)] text-black hover:opacity-90"
+                    } ${loadingStatus ? "opacity-50 cursor-wait" : ""}`}
+                  >
+                    {loadingStatus ? "Checking..." : hasApplied ? "Applied" : "Apply Now"}
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="px-6 py-3 border border-white/20 text-white hover:bg-white/10 transition"
+                  >
+                    Close
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </motion.div>

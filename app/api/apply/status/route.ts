@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Application from "@/models/application";
+import User from "@/models/user";
 import { getUserId } from "@/lib/auth-helpers";
 
 /**
@@ -13,6 +14,7 @@ import { getUserId } from "@/lib/auth-helpers";
  * Returns:
  * - 200: { applied: boolean } - Whether the user has applied
  * - 401: Unauthorized if user is not logged in
+ * - 403: Payment required if talent hasn't paid
  */
 export async function GET(req: Request) {
   // Get jobId from query parameters
@@ -35,9 +37,19 @@ export async function GET(req: Request) {
   // Connect to MongoDB database
   await connectDB();
 
+  // Check if talent has paid ($300 payment gate)
+  const user = await User.findById(talentId);
+  if (user?.role === "TALENT" && !user?.paymentConfirmed) {
+    return NextResponse.json(
+      { error: "Payment required", applied: false },
+      { status: 403 }
+    );
+  }
+
   // Check if application exists for this job and user
   const existing = await Application.findOne({ jobId, talentId });
 
   // Return applied status
   return NextResponse.json({ applied: !!existing });
 }
+

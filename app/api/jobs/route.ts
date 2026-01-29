@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { connectDB } from "@/lib/mongodb";
 import Job from "@/models/job";
 import User from "@/models/user";
@@ -8,15 +9,34 @@ import { getTrustLevel, getDirectorCapabilities } from "@/lib/director-trust";
  * GET /api/jobs
  * Fetches all open jobs (public listing)
  * 
+ * Payment Gate:
+ * - If user is a TALENT and has NOT paid ($300), returns 403 Unauthorized
+ * - Redirects to /auth/payment-required
+ * 
  * Returns:
  * - 200: { jobs: Job[] } - List of jobs
+ * - 403: { error: "Payment required" } - If talent hasn't paid
  */
-export async function GET() {
+export async function GET(req: Request) {
   await connectDB();
 
   try {
+    // Check if user is authenticated and is a talent
+    const session = await auth();
+    if (session?.user) {
+      const user = session.user as any;
+      
+      // If talent and not paid, block access
+      if (user.role === "TALENT" && !user.paymentConfirmed) {
+        return NextResponse.json(
+          { error: "Payment required. Please complete payment to access jobs.", redirect: "/auth/payment-required" },
+          { status: 403 }
+        );
+      }
+    }
+
     // Fetch all open jobs, sorted by deadline (soonest first)
-    const jobs = await Job.find({ status: "open" })
+    const jobs = await Job.find({ status: "open", hidden: { $ne: true } })
       .sort({ deadline: 1, createdAt: -1 })
       .limit(100); // Limit to prevent performance issues
 

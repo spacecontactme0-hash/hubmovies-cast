@@ -49,6 +49,10 @@ export async function POST(req: Request) {
         emailVerified: new Date(),
         role: userRole,
         verificationTier: "BASIC", // Initial tier for new users
+        // Talents are frozen by default until they pay $300
+        // Directors are not frozen
+        frozen: userRole === "TALENT",
+        restrictionReason: userRole === "TALENT" ? "Payment required to unlock account" : null,
       });
     }
 

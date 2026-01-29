@@ -111,12 +111,20 @@ export async function POST(req: Request) {
   // Connect to MongoDB database
   await connectDB();
 
-  // Check profile completion (enforcement)
+  // Check if talent has paid ($300 payment gate)
   const user = await User.findById(talentId);
   if (!user) {
     return NextResponse.json(
       { error: "User not found" },
       { status: 404 }
+    );
+  }
+
+  // Block unpaid talents from applying
+  if (user.role === "TALENT" && !user.paymentConfirmed) {
+    return NextResponse.json(
+      { error: "Payment required. Please complete payment to apply for jobs.", redirect: "/auth/payment-required" },
+      { status: 403 }
     );
   }
 
