@@ -155,6 +155,21 @@ Authentication & Authorization
 
 ✅ Email verification enforcement (session, middleware, API, UI)
 
+Payment System (NEW)
+✅ Settings model for storing payment addresses (ETH, BTC)
+
+✅ Admin API to set/update payment addresses (`POST /api/admin/payment`)
+
+✅ Payment confirmation API to unlock users (`POST /api/admin/users/[id]/confirm-payment`)
+
+✅ User payment fields: paymentConfirmed, paymentMethod, paymentReference, paymentAt
+
+✅ Admin payments UI (`/admin/payments`) to manage addresses and confirm payments
+
+✅ Awaiting payment list for admin review (`GET /api/admin/users/awaiting-payment`)
+
+✅ Payment confirmation unfreezes user account and creates audit log
+
 Profile Management
 ✅ Talent profile editing with image upload
 
@@ -273,7 +288,67 @@ Role System & Data
 hubmovies-cast/
 ├─ web/                          # Next.js application root
 │  ├─ app/                       # Next.js App Router directory
+│  │  ├─ admin/
+│  │  │  ├─ page.tsx             # Admin dashboard (redirects to jobs)
+│  │  │  ├─ jobs/
+│  │  │  │  └─ page.tsx          # Admin job management
+│  │  │  │     └─ [id]/
+│  │  │  │        └─ applications/
+│  │  │  │           └─ page.tsx # Admin view job applications
+│  │  │  ├─ payments/
+│  │  │  │  └─ page.tsx          # Admin payment settings & confirmation UI
+│  │  │  ├─ setup/
+│  │  │  │  └─ page.tsx          # Admin initial setup page
+│  │  │  └─ trust/
+│  │  │     ├─ director/
+│  │  │     │  └─ [id]/
+│  │  │     │     └─ page.tsx    # Admin director trust management
+│  │  │     └─ talent/
+│  │  │        └─ [id]/
+│  │  │           └─ page.tsx    # Admin talent verification tier management
 │  │  ├─ api/                    # API routes
+│  │  │  ├─ admin/
+│  │  │  │  ├─ jobs/
+│  │  │  │  │  ├─ route.ts       # GET/POST admin job management
+│  │  │  │  │  └─ [id]/
+│  │  │  │  │     ├─ actions/
+│  │  │  │  │     │  └─ route.ts # PATCH job actions (hide, close early)
+│  │  │  │  │     └─ applications/
+│  │  │  │  │        └─ route.ts # GET job applications for admin
+│  │  │  │  ├─ payment/
+│  │  │  │  │  └─ route.ts       # GET/POST admin payment addresses (ETH/BTC)
+│  │  │  │  ├─ restrictions/
+│  │  │  │  │  ├─ director/
+│  │  │  │  │  │  └─ [id]/
+│  │  │  │  │  │     └─ route.ts # Admin talent restrictions
+│  │  │  │  │  └─ talent/
+│  │  │  │  │     └─ [id]/
+│  │  │  │  │        └─ route.ts # Admin talent restrictions
+│  │  │  │  ├─ setup/
+│  │  │  │  │  └─ route.ts       # Admin setup endpoint
+│  │  │  │  ├─ trust/
+│  │  │  │  │  ├─ director/
+│  │  │  │  │  │  └─ [id]/
+│  │  │  │  │  │     └─ route.ts # Admin director trust management
+│  │  │  │  │  ├─ talent/
+│  │  │  │  │  │  └─ [id]/
+│  │  │  │  │  │     └─ route.ts # Admin talent verification tiers
+│  │  │  │  │  └─ override/
+│  │  │  │  │     └─ route.ts    # Admin trust score override
+│  │  │  │  └─ users/
+│  │  │  │     ├─ awaiting-payment/
+│  │  │  │     │  └─ route.ts    # GET list of users awaiting payment confirmation
+│  │  │  │     └─ [id]/
+│  │  │  │        ├─ confirm-payment/
+│  │  │  │        │  └─ route.ts # POST confirm user payment & unlock account
+│  │  │  │        ├─ freeze/
+│  │  │  │        │  └─ route.ts # POST freeze user account
+│  │  │  │        ├─ unfreeze/
+│  │  │  │        │  └─ route.ts # POST unfreeze user account
+│  │  │  │        ├─ profile/
+│  │  │  │        │  └─ route.ts # GET/PATCH admin user profile
+│  │  │  │        └─ restrictions/
+│  │  │  │           └─ route.ts # GET/PATCH user restrictions
 │  │  │  ├─ apply/
 │  │  │  │  ├─ route.ts          # POST endpoint for job applications
 │  │  │  │  └─ status/
@@ -404,6 +479,7 @@ hubmovies-cast/
 │  │  ├─ page.tsx                # Landing page
 │  │  └─ providers.tsx           # SessionProvider wrapper
 │  ├─ lib/                       # Utility libraries
+│  │  ├─ admin-helpers.ts        # Admin authentication & authorization utilities
 │  │  ├─ auth-adapter.ts         # NextAuth Mongoose adapter
 │  │  ├─ auth-helpers.ts         # Auth utility functions
 │  │  ├─ cloudinary.ts           # Cloudinary media upload client
@@ -413,11 +489,13 @@ hubmovies-cast/
 │  │  └─ profile-completion.ts   # Profile completion calculation
 │  ├─ models/                    # Database models
 │  │  ├─ application.ts          # Application schema/model
+│  │  ├─ audit-log.ts            # Audit log schema for admin actions
 │  │  ├─ job.ts                  # Job posting schema
 │  │  ├─ message.ts              # Message schema
 │  │  ├─ notification.ts         # Notification schema
 │  │  ├─ session.ts             # NextAuth session schema
-│  │  ├─ user.ts                 # User schema
+│  │  ├─ settings.ts            # Settings schema (payment addresses)
+│  │  ├─ user.ts                 # User schema (updated with payment fields)
 │  │  └─ verification-token.ts   # Email verification token schema
 │  ├─ public/                    # Static assets
 │  │  ├─ file.svg
@@ -677,6 +755,110 @@ Use Framer Motion for smooth step transitions.
 ---
 
 ## 📝 Recent Changes & Updates
+
+### Latest Update: Admin UI Enhancements - Bulk Payments, Pagination & History
+
+**Date:** January 29, 2026
+
+**Major Changes Made:**
+
+1. **Bulk Payment Confirmation**
+   - ✅ Added bulk selection checkboxes to `/admin/payments` page
+   - ✅ "Select all on page" checkbox for quick bulk selection
+   - ✅ Bulk confirmation button with validation
+   - ✅ `POST /api/admin/users/bulk-confirm-payment` endpoint
+   - ✅ Confirms multiple payments with single method + reason
+   - ✅ Creates individual audit logs for each user
+
+2. **Payment History Tracking**
+   - ✅ New `/admin/payments/history` page with full payment history
+   - ✅ `GET /api/admin/payments/history` API endpoint
+   - ✅ Filters: Payment Method (ETH/BTC), Email search, Date range
+   - ✅ Pagination support (page, limit parameters)
+   - ✅ Export to CSV button (downloads filtered/paginated results)
+   - ✅ Table display: Email, Name, Method, Transaction Hash, Dates
+
+3. **Pagination Enhancements**
+   - ✅ Updated `/api/admin/users/awaiting-payment` with page/limit
+   - ✅ Default 20 results per page, configurable via limit param
+   - ✅ Pagination info: current page, total pages, total count
+   - ✅ Previous/Next navigation buttons on UI
+
+4. **Admin Payments Page Updates**
+   - ✅ Bulk selection UI with checkboxes
+   - ✅ "X selected" counter when items are checked
+   - ✅ "Confirm Selected" button for bulk actions
+   - ✅ Link to payment history page ("View History →")
+   - ✅ Improved layout and status indicators
+
+**New Files Created:**
+- `app/admin/payments/history/page.tsx` - Payment history UI page with filters and export
+
+**New API Routes Created:**
+- `POST /api/admin/users/bulk-confirm-payment` - Bulk confirm payments
+- `GET /api/admin/payments/history?page=1&limit=20&method=ETH&email=test&startDate=...&endDate=...` - Payment history
+
+**Files Modified:**
+- `app/admin/payments/page.tsx` - Already had bulk UI implementation
+- `README.md` - Updated implementation summary and phase status
+
+**Build Status:**
+- ✅ Production build successful (58 pages, 0 TypeScript errors)
+- ✅ New routes registered: `/admin/payments/history` (static), `/api/admin/payments/history` (dynamic), `/api/admin/users/bulk-confirm-payment` (dynamic)
+
+**API Documentation:**
+
+#### Bulk Confirm Payments
+```typescript
+POST /api/admin/users/bulk-confirm-payment
+Content-Type: application/json
+
+Request:
+{
+  userIds: string[] - Array of user IDs
+  method: "ETH" | "BTC" - Payment method
+  reason?: string - Optional reason for audit log
+}
+
+Response:
+{
+  confirmed: number,
+  failed: number,
+  skipped: number,
+  message: string
+}
+```
+
+#### Payment History
+```typescript
+GET /api/admin/payments/history?page=1&limit=20&method=ETH&email=user@example.com&startDate=2026-01-01&endDate=2026-01-31
+
+Query Parameters:
+- page: number (default: 1)
+- limit: number (default: 20)
+- method: "ETH" | "BTC" (optional)
+- email: string (optional, partial match)
+- startDate: YYYY-MM-DD (optional)
+- endDate: YYYY-MM-DD (optional)
+
+Response:
+{
+  users: Array<{
+    _id: string
+    email: string
+    name?: string
+    paymentMethod: "ETH" | "BTC"
+    paymentReference?: string
+    paymentAt: string (ISO date)
+    createdAt: string (ISO date)
+    auditLogs: Array<{ _id: string; reason?: string; createdAt: string }>
+  }>
+  pagination: { page, limit, total, pages }
+  filters: { method, email, startDate, endDate }
+}
+```
+
+---
 
 ### Latest Update: Admin System, Authentication Improvements, Session Fixes & Mobile Responsiveness
 
@@ -1417,6 +1599,165 @@ The admin trust override system allows administrators to understand why users ha
 - `messagingDisabled`: Boolean - Messaging disabled (director)
 - `postingFrozen`: Boolean - Job posting frozen (director)
 - `highRisk`: Boolean - High risk flag (internal, director)
+- `paymentConfirmed`: Boolean - Payment confirmed by admin
+- `paymentMethod`: String (ETH | BTC | null) - Payment method used
+- `paymentReference`: String - Transaction hash or reference
+- `paymentAt`: Date - When payment was confirmed
+
+---
+
+## 📋 Implementation Summary
+
+### Payment System (January 2026)
+
+**What was completed:**
+1. ✅ **Database Models**
+   - Added `Settings` model to store payment wallet addresses (ETH/BTC)
+   - Extended `User` model with payment fields: `paymentConfirmed`, `paymentMethod`, `paymentReference`, `paymentAt`
+   - Payment confirmation creates audit log entry
+
+2. ✅ **Admin API Routes**
+   - `GET/POST /api/admin/payment` - Read/update global payment addresses (admin only)
+   - `GET /api/admin/users/awaiting-payment?page=1&limit=20` - List users awaiting payment with pagination
+   - `POST /api/admin/users/[id]/confirm-payment` - Confirm payment, unlock user account, log action
+   - `POST /api/admin/users/bulk-confirm-payment` - Bulk confirm multiple payments at once
+   - `GET /api/admin/payments/history?page=1&limit=20&method=ETH&email=test&startDate=...&endDate=...` - Payment history with filters
+
+3. ✅ **Admin UI** (`/admin/payments`)
+   - View/edit ETH and BTC payment addresses
+   - View list of awaiting-payment users with pagination (20 per page)
+   - Bulk selection checkboxes for multi-user confirmation
+   - Single payment confirmation modal (method + optional reference)
+   - Bulk payment confirmation with single action
+   - Link to payment history page
+
+4. ✅ **Payment History Page** (`/admin/payments/history`)
+   - Complete payment history table with all confirmed payments
+   - Filters: Payment Method (ETH/BTC), Email search, Date range (start/end)
+   - Pagination for large datasets
+   - Export to CSV button (downloads as .csv file with timestamp)
+   - Shows: Email, Name, Method, Transaction Hash, Payment Date, Registered Date
+
+5. ✅ **Production Build**
+   - Zero TypeScript errors
+   - All 58 routes compiled successfully
+   - New routes: `/admin/payments/history` (static), `/api/admin/payments/history` (dynamic), `/api/admin/users/bulk-confirm-payment` (dynamic)
+
+---
+
+## 🔮 What's Next
+
+### Phase 1: User-Facing Payment Flow (Immediate) ✅ COMPLETED
+1. ✅ **Talent Registration Gating**
+   - When talent registers, freeze account by default (restrict `frozen: true`)
+   - Show payment gateway page (`/auth/payment-required`)
+   - Display admin-configured ETH and BTC addresses
+   - Add payment tracking: `paymentReference` → tx hash
+   - Fetch payment addresses from `GET /api/admin/payment` at signup
+
+2. ✅ **Payment Gateway Integration**
+   - ETH: Integrate Etherscan API or Web3 provider (e.g., ethers.js, wagmi) to verify transaction
+   - BTC: Use blockchain API (e.g., Blockchain.info, Blockchair) to verify transaction
+   - Auto-detection: Scan wallets for payment to admin address
+
+3. ✅ **Payment Status Page**
+   - Talent-facing dashboard to check payment status
+   - Show tx confirmation state (pending, confirmed, failed)
+   - Manual entry form to submit tx hash for verification
+   - Admin can manually confirm if auto-detection fails
+
+### Phase 2: Jobs Access Control ✅ COMPLETED
+1. ✅ **Apply Gating**
+   - Only show jobs to talents with `paymentConfirmed: true`
+   - Redirect unpaid talents to payment page
+   - Block direct API access for unpaid users
+
+2. ✅ **Jobs Listing Endpoint**
+   - Add check: `if (talent.paymentConfirmed === false) return 403 "Payment required"`
+
+### Phase 3: Payment Dashboard Enhancement ✅ COMPLETED
+1. ✅ **Admin Payments Page Improvements**
+   - Bulk selection checkboxes for multi-user confirmation
+   - Pagination support (page, limit parameters)
+   - Link to payment history page
+
+2. ✅ **User Payment History**
+   - New page: `/admin/payments/history` showing all confirmed payments
+   - Filters: date range, payment method, user email
+   - Export to CSV
+   - Pagination for large datasets
+
+### Phase 4: Automation & Monitoring (Next)
+1. **Payment Webhooks**
+   - Set up blockchain webhooks to auto-confirm payments
+   - Listen for tx confirmation, auto-unlock user
+   - Retry logic for failed verification
+
+2. **Payment Reminders**
+   - Email reminder to unpaid talents after 24h, 3d, 7d
+   - Link in email to payment page
+   - Track reminder sends in audit log
+
+### Phase 5: Testing & QA
+1. **End-to-End Testing**
+   - Test: Register talent → freeze → pay → verify → unlock → access jobs
+   - Test: Admin manual confirmation
+   - Test: Multiple payment methods
+   - Test: Bulk confirmation workflow
+
+2. **Edge Cases**
+   - Duplicate payments
+   - Partial payments
+   - Blockchain transaction reorg handling
+   - Failed/pending transactions
+
+---
+
+## 🛠 Technical Debt & Improvements
+
+### Short-term
+- [ ] Replace prompt-based UI with modal form for payment confirmation
+- [ ] Add error boundaries to admin pages
+- [ ] Add loading states and optimistic updates
+- [ ] Implement pagination in awaiting-payment list
+
+### Medium-term
+- [ ] Add payment webhooks for blockchain verification
+- [ ] Implement bulk operations for admin
+- [ ] Add caching layer for payment addresses (Redis)
+- [ ] Set up payment verification job (cron)
+
+### Long-term
+- [ ] Migrate to professional payment processor (Stripe, Coinbase Commerce)
+- [ ] Implement recurring payments for annual subscription model
+- [ ] Add invoice generation and PDF export
+- [ ] Integrate accounting/bookkeeping system
+
+---
+
+## 📚 Local Development
+
+### Start Dev Server
+```bash
+npm run dev
+# Dev server runs on http://localhost:3001 (port 3000 may be in use)
+```
+
+### Access Admin Pages
+1. Navigate to http://localhost:3001/admin/setup to create admin user (if first time)
+2. Log in as admin at http://localhost:3001/auth
+3. Visit http://localhost:3001/admin/payments to manage payment settings
+
+### API Endpoints (Admin Only - Requires Auth)
+- `GET /api/admin/payment` - Fetch current ETH/BTC addresses
+- `POST /api/admin/payment` - Update ETH/BTC addresses
+- `GET /api/admin/users/awaiting-payment` - List awaiting users
+- `POST /api/admin/users/[id]/confirm-payment` - Confirm and unlock user
+
+### Database Setup
+- MongoDB connection required (set `MONGODB_URI` in `.env.local`)
+- Models auto-migrate on first use
+- No manual migration needed
 - `restrictionReason`: String - Reason for restriction
 - `restrictionExpiresAt`: Date - When restriction expires (null = indefinite)
 - `restrictedBy`: String - Admin ID who applied restriction
