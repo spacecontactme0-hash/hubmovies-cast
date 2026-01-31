@@ -54,13 +54,13 @@ function ProfileCompletionCard() {
           <p className="text-white text-sm font-medium mb-1">
             Complete Your Profile
           </p>
-          <p className="text-[var(--text-secondary)] text-xs">
+          <p className="text-(--text-secondary) text-xs">
             Your profile is {completion.score}% complete. Complete your profile to apply for roles.
           </p>
         </div>
         <button
           onClick={() => router.push("/talent/profile")}
-          className="px-4 py-2 bg-[var(--accent-gold)] text-black text-sm font-medium rounded hover:opacity-90 transition"
+          className="px-4 py-2 bg-(--accent-gold) text-black text-sm font-medium rounded hover:opacity-90 transition"
         >
           Complete
         </button>
@@ -167,11 +167,11 @@ export default function TalentDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "shortlisted":
-        return "text-[var(--accent-gold)] border-[var(--accent-gold)]/30";
+        return "text-(--accent-gold) border-(--accent-gold)/30";
       case "rejected":
         return "text-[#8f1d18] border-[#8f1d18]/30";
       default:
-        return "text-[var(--text-secondary)] border-white/10";
+        return "text-(--text-secondary) border-white/10";
     }
   };
 
@@ -206,10 +206,10 @@ export default function TalentDashboard() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="mb-10"
         >
-          <h1 className="text-3xl md:text-4xl font-heading text-[var(--text-primary)] mb-2">
+          <h1 className="text-3xl md:text-4xl font-heading text-(--text-primary) mb-2">
             My Applications
           </h1>
-          <p className="text-sm font-body text-[var(--text-secondary)]">
+          <p className="text-sm font-body text-(--text-secondary)">
             Track the status of roles you've applied for.
           </p>
         </motion.div>
@@ -233,7 +233,7 @@ export default function TalentDashboard() {
         {/* Applications List */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-[var(--text-secondary)] font-body">Loading applications...</p>
+            <p className="text-(--text-secondary) font-body">Loading applications...</p>
           </div>
         ) : applications.length === 0 ? (
           <motion.div

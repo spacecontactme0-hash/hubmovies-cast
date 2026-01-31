@@ -207,8 +207,8 @@ export default function AdminPaymentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center">
-        <p className="text-[var(--text-secondary)]">Loading payment settings...</p>
+      <div className="min-h-screen bg-(--bg-main) flex items-center justify-center">
+        <p className="text-(--text-secondary)">Loading payment settings...</p>
       </div>
     );
   }
@@ -337,7 +337,7 @@ export default function AdminPaymentsPage() {
               <button
                 onClick={saveAddresses}
                 disabled={saving}
-                className="px-4 py-2 bg-[var(--accent-gold)] text-black rounded font-medium hover:bg-[#d4b364] disabled:opacity-50 transition"
+                className="px-4 py-2 bg-(--accent-gold) text-black rounded font-medium hover:bg-[#d4b364] disabled:opacity-50 transition"
               >
                 {saving ? "Saving..." : "Save Settings"}
               </button>

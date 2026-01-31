@@ -34,11 +34,11 @@ export default function ApplicationDetailModal({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "shortlisted":
-        return "text-[var(--accent-gold)] border-[var(--accent-gold)]/30";
+        return "text-(--accent-gold) border-(--accent-gold)/30";
       case "rejected":
         return "text-[#8f1d18] border-[#8f1d18]/30";
       default:
-        return "text-[var(--text-secondary)] border-white/10";
+        return "text-(--text-secondary) border-white/10";
     }
   };
 
@@ -52,21 +52,21 @@ export default function ApplicationDetailModal({
         onClick={onClose}
       >
         <motion.div
-          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-[var(--bg-main)] text-white shadow-2xl"
+          className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-(--bg-main) text-white shadow-2xl"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 border-b border-white/10 bg-[var(--bg-main)] p-6 z-10">
+          <div className="sticky top-0 border-b border-white/10 bg-(--bg-main) p-6 z-10">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-heading font-semibold">
                 Application Details
               </h2>
               <button
                 onClick={onClose}
-                className="text-[var(--text-secondary)] hover:text-white transition"
+                className="text-(--text-secondary) hover:text-white transition"
                 aria-label="Close"
               >
                 ✕
@@ -80,7 +80,7 @@ export default function ApplicationDetailModal({
             {application.job && (
               <div>
                 <h3 className="text-lg font-semibold mb-2">{application.job.title}</h3>
-                <div className="space-y-2 text-sm text-[var(--text-secondary)]">
+                <div className="space-y-2 text-sm text-(--text-secondary)">
                   <p><span className="text-white">Type:</span> {application.job.type}</p>
                   <p><span className="text-white">Location:</span> {application.job.location}</p>
                   <p><span className="text-white">Budget:</span> {application.job.budget}</p>
@@ -91,7 +91,7 @@ export default function ApplicationDetailModal({
 
             {/* Status */}
             <div>
-              <p className="text-sm text-[var(--text-secondary)] mb-2">Status</p>
+              <p className="text-sm text-(--text-secondary) mb-2">Status</p>
               <span
                 className={`inline-block px-3 py-1 rounded border text-sm capitalize ${getStatusColor(application.status)}`}
               >
@@ -102,7 +102,7 @@ export default function ApplicationDetailModal({
             {/* Answer */}
             {application.answer && (
               <div>
-                <p className="text-sm text-[var(--text-secondary)] mb-2">Your Answer</p>
+                <p className="text-sm text-(--text-secondary) mb-2">Your Answer</p>
                 <p className="text-white whitespace-pre-wrap">{application.answer}</p>
               </div>
             )}
@@ -110,7 +110,7 @@ export default function ApplicationDetailModal({
             {/* Media */}
             {application.mediaUrl && (
               <div>
-                <p className="text-sm text-[var(--text-secondary)] mb-2">Media</p>
+                <p className="text-sm text-(--text-secondary) mb-2">Media</p>
                 <div className="border border-white/10 rounded overflow-hidden">
                   {application.mediaUrl.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                     <img
@@ -131,7 +131,7 @@ export default function ApplicationDetailModal({
 
             {/* Created Date */}
             <div>
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-(--text-secondary)">
                 Applied on {new Date(application.createdAt).toLocaleDateString()}
               </p>
             </div>

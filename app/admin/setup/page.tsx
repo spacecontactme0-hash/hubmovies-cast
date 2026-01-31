@@ -37,14 +37,14 @@ export default function AdminSetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center p-8">
+    <div className="min-h-screen bg-(--bg-main) flex items-center justify-center p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white/5 border border-white/10 rounded-lg p-8"
       >
         <h1 className="text-2xl font-heading text-white mb-4">Admin Setup</h1>
-        <p className="text-sm text-[var(--text-secondary)] mb-6">
+        <p className="text-sm text-(--text-secondary) mb-6">
           Create the initial admin user account
         </p>
 
@@ -88,7 +88,7 @@ export default function AdminSetupPage() {
           <button
             onClick={handleSetup}
             disabled={loading}
-            className="w-full px-6 py-3 bg-[var(--accent-gold)] text-black font-medium rounded hover:opacity-90 transition disabled:opacity-50"
+            className="w-full px-6 py-3 bg-(--accent-gold) text-black font-medium rounded hover:opacity-90 transition disabled:opacity-50"
           >
             {loading ? "Creating..." : "Create Admin User"}
           </button>

@@ -147,14 +147,14 @@ export default function PaymentHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center">
-        <p className="text-[var(--text-secondary)]">Loading payment history...</p>
+      <div className="min-h-screen bg-(--bg-main) flex items-center justify-center">
+        <p className="text-(--text-secondary)">Loading payment history...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] p-8">
+    <div className="min-h-screen bg-(--bg-main) p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-heading text-white">Payment History</h1>
@@ -184,7 +184,7 @@ export default function PaymentHistoryPage() {
           <h2 className="text-lg text-white mb-4">Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-2">
+              <label className="block text-sm text-(--text-secondary) mb-2">
                 Payment Method
               </label>
               <select

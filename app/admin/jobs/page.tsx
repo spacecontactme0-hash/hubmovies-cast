@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CreateJobModal from "@/app/components/director/dashboard/modals/create-job-modal";
 
 type Job = {
   _id: string;
@@ -30,6 +31,7 @@ export default function AdminJobsPage() {
     status: "",
     hidden: "",
   });
+  const [showCreate, setShowCreate] = useState(false);
 
   useEffect(() => {
     async function fetchJobs() {
@@ -98,18 +100,54 @@ export default function AdminJobsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-heading text-white">Admin: Job Management</h1>
-          <Link
-            href="/admin"
-            className="px-4 py-2 border border-white/20 text-white rounded hover:bg-white/10 transition"
-          >
-            ← Back to Admin
-          </Link>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowCreate(true)}
+              className="px-4 py-2 bg-(--accent-gold) text-black rounded hover:opacity-90 transition"
+            >
+              + Create Job
+            </button>
+            <Link
+              href="/admin"
+              className="px-4 py-2 border border-white/20 text-white rounded hover:bg-white/10 transition"
+            >
+              ← Back to Admin
+            </Link>
+          </div>
         </div>
 
         {error && (
           <div className="p-4 bg-red-500/20 border border-red-500/30 rounded text-red-400">
             {error}
           </div>
+        )}
+
+        {/* Create Job Modal */}
+        {showCreate && (
+          <CreateJobModal
+            onClose={() => setShowCreate(false)}
+            onSubmit={async (data) => {
+              try {
+                const res = await fetch('/api/admin/jobs', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(data),
+                });
+
+                if (res.ok) {
+                  setShowCreate(false);
+                  // Refresh list
+                  window.location.reload();
+                } else {
+                  const err = await res.json();
+                  alert(err.error || 'Failed to create job');
+                }
+              } catch (err) {
+                console.error('Failed to create job:', err);
+                alert('Network error. Please try again.');
+              }
+            }}
+          />
         )}
 
         {/* Filters */}

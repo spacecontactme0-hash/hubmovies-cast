@@ -56,29 +56,29 @@ export default function Header() {
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/40 border-b border-[var(--border-subtle)]"
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/40 border-b border-(--border-subtle)"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link
           href="/"
-          className="font-heading text-lg sm:text-xl tracking-wide text-white flex-shrink-0"
+          className="font-heading text-lg sm:text-xl tracking-wide text-white shrink-0"
         >
-          Hub<span className="text-[var(--accent-gold)]">Movies</span>
+          Hub<span className="text-(--accent-gold)">Movies</span>
         </Link>
 
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm tracking-wide">
-          <Link href="/jobs" className="text-[var(--text-secondary)] hover:text-white transition">
+          <Link href="/jobs" className="text-(--text-secondary) hover:text-white transition">
             Jobs
           </Link>
-          <Link href="/talents" className="text-[var(--text-secondary)] hover:text-white transition">
+          <Link href="/talents" className="text-(--text-secondary) hover:text-white transition">
             Talents
           </Link>
-          <Link href="/how-it-works" className="text-[var(--text-secondary)] hover:text-white transition">
+          <Link href="/how-it-works" className="text-(--text-secondary) hover:text-white transition">
             How It Works
           </Link>
-          <Link href="/pricing" className="text-[var(--text-secondary)] hover:text-white transition">
+          <Link href="/pricing" className="text-(--text-secondary) hover:text-white transition">
             Pricing
           </Link>
         </nav>
@@ -105,8 +105,8 @@ export default function Header() {
                         className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-white/20 cursor-pointer hover:border-[var(--accent-gold)]/50 transition"
                       />
                     ) : (
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[var(--accent-gold)]/20 border border-[var(--accent-gold)]/30 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-[var(--accent-gold)]/50 transition">
-                        <span className="text-[var(--accent-gold)] text-xs font-medium">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-(--accent-gold)/20 border border-(--accent-gold)/30 flex items-center justify-center shrink-0 cursor-pointer hover:border-(--accent-gold)/50 transition">
+                          <span className="text-(--accent-gold) text-xs font-medium">
                           {(user?.name || user?.email || "U")[0].toUpperCase()}
                         </span>
                       </div>
@@ -148,7 +148,7 @@ export default function Header() {
                         {/* Admin dashboard */}
                         {user?.role === "ADMIN" && (
                           <Link
-                            href="/admin/jobs"
+                            href="/admin"
                             onClick={() => setShowMenu(false)}
                             className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
                           >
@@ -174,7 +174,7 @@ export default function Header() {
                               router.refresh();
                             });
                           }}
-                          className="block w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-white/10 hover:text-white transition"
+                            className="block w-full text-left px-4 py-2 text-sm text-(--text-secondary) hover:bg-white/10 hover:text-white transition"
                         >
                           Sign Out
                         </button>
@@ -189,7 +189,7 @@ export default function Header() {
               <NotificationBell />
               <Link
                 href="/auth/password"
-                className="text-xs sm:text-sm text-[var(--text-secondary)] hover:text-white transition"
+                className="text-xs sm:text-sm text-(--text-secondary) hover:text-white transition"
               >
                 Sign In
               </Link>

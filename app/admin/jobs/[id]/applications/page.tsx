@@ -70,20 +70,20 @@ export default function AdminJobApplicationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center">
-        <p className="text-[var(--text-secondary)]">Loading applications...</p>
+      <div className="min-h-screen bg-(--bg-main) flex items-center justify-center">
+        <p className="text-(--text-secondary)">Loading applications...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] p-8">
+    <div className="min-h-screen bg-(--bg-main) p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <Link
               href="/admin/jobs"
-              className="text-sm text-[var(--text-secondary)] hover:text-white transition mb-2 inline-block"
+              className="text-sm text-(--text-secondary) hover:text-white transition mb-2 inline-block"
             >
               ← Back to Jobs
             </Link>
@@ -91,7 +91,7 @@ export default function AdminJobApplicationsPage() {
               Applications for: {job?.title || "Job"}
             </h1>
             {job && (
-              <p className="text-sm text-[var(--text-secondary)] mt-2">
+              <p className="text-sm text-(--text-secondary) mt-2">
                 {job.type} · {job.location}
               </p>
             )}

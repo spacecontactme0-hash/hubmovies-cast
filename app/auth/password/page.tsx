@@ -152,7 +152,7 @@ function PasswordLoginPage() {
   return (
     <>
       {establishingSession && <SessionLoader />}
-      <div className="min-h-screen bg-[var(--bg-main)] relative flex items-center justify-center p-8">
+      <div className="min-h-screen bg-(--bg-main) relative flex items-center justify-center p-8">
       {/* Noise overlay */}
       <div
         className="fixed inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -170,7 +170,7 @@ function PasswordLoginPage() {
       >
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-heading text-white mb-2">Sign In</h1>
-          <p className="text-sm text-[var(--text-secondary)]">
+          <p className="text-sm text-(--text-secondary)">
             Enter your email and password
           </p>
         </div>
@@ -198,7 +198,7 @@ function PasswordLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded text-white placeholder-[var(--text-secondary)] focus:outline-none focus:border-[var(--accent-gold)]/50 font-body"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded text-white placeholder-(--text-secondary) focus:outline-none focus:border-(--accent-gold)/50 font-body"
             />
           </div>
 

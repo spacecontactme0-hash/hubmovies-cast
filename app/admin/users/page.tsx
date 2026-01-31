@@ -189,7 +189,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] p-8">
+    <div className="min-h-screen bg-(--bg-main) p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-heading text-white">Admin: Users</h1>
@@ -214,24 +214,24 @@ export default function AdminUsersPage() {
               <option value="DIRECTOR">Director</option>
               <option value="ADMIN">Admin</option>
             </select>
-            <button onClick={() => { setPagination({ ...pagination, page: 1 }); fetchData(); }} className="px-4 py-2 bg-[var(--accent-gold)] text-black rounded">Search</button>
+            <button onClick={() => { setPagination({ ...pagination, page: 1 }); fetchData(); }} className="px-4 py-2 bg-(--accent-gold) text-black rounded">Search</button>
           </div>
 
           {loading ? (
-            <p className="text-[var(--text-secondary)]">Loading users...</p>
+            <p className="text-(--text-secondary)">Loading users...</p>
           ) : error ? (
             <div className="p-3 bg-red-500/20 rounded text-red-400">{error}</div>
           ) : (
             <>
               <div className="space-y-2">
                 {users.length === 0 ? (
-                  <p className="text-[var(--text-secondary)]">No users found.</p>
+                  <p className="text-(--text-secondary)">No users found.</p>
                 ) : (
                   users.map((u) => (
                     <div key={u._id} className="flex items-center justify-between bg-white/3 p-3 rounded">
                       <div>
                         <div className="text-white font-medium">{u.name || u.email}</div>
-                        <div className="text-sm text-[var(--text-secondary)]">{u.email} • {u.role} • Registered {new Date(u.createdAt).toLocaleDateString()}</div>
+                        <div className="text-sm text-(--text-secondary)">{u.email} • {u.role} • Registered {new Date(u.createdAt).toLocaleDateString()}</div>
                       </div>
 
                       <div className="flex gap-2 items-center">
@@ -266,7 +266,7 @@ export default function AdminUsersPage() {
               {/* Pagination */}
               {pagination.pages > 1 && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                  <div className="text-sm text-[var(--text-secondary)]">Page {pagination.page} of {pagination.pages}</div>
+                  <div className="text-sm text-(--text-secondary)">Page {pagination.page} of {pagination.pages}</div>
                   <div className="flex gap-2">
                     <button onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })} disabled={pagination.page === 1} className="px-3 py-1 border border-white/20 text-white rounded hover:bg-white/10 disabled:opacity-50">← Previous</button>
                     <button onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })} disabled={pagination.page >= pagination.pages} className="px-3 py-1 border border-white/20 text-white rounded hover:bg-white/10 disabled:opacity-50">Next →</button>
@@ -279,16 +279,16 @@ export default function AdminUsersPage() {
           {/* Profile Modal */}
           {showProfileModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-              <div className="bg-[var(--bg-main)] p-6 rounded-lg w-full max-w-2xl border border-white/10">
+              <div className="bg-(--bg-main) p-6 rounded-lg w-full max-w-2xl border border-white/10">
                 <div className="flex justify-between items-start">
                   <h2 className="text-xl text-white mb-2">{profileData?.name || profileData?.email || "Profile"}</h2>
-                  <button onClick={closeProfileModal} className="text-[var(--text-secondary)]">Close</button>
+                  <button onClick={closeProfileModal} className="text-(--text-secondary)">Close</button>
                 </div>
 
                 {profileLoading ? (
-                  <p className="text-[var(--text-secondary)]">Loading...</p>
+                  <p className="text-(--text-secondary)">Loading...</p>
                 ) : profileData ? (
-                  <div className="space-y-3 text-sm text-[var(--text-secondary)]">
+                  <div className="space-y-3 text-sm text-(--text-secondary)">
                     <div>Email: <span className="text-white">{profileData.email}</span></div>
                     <div>Role: <span className="text-white">{profileData.role}</span></div>
                     <div>Phone: <span className="text-white">{profileData.phone || '-'}</span></div>
@@ -313,7 +313,7 @@ export default function AdminUsersPage() {
                         <button onClick={() => { confirmPayment(profileData._id); closeProfileModal(); }} className="px-3 py-1 bg-blue-600 text-white rounded">Confirm Payment</button>
                       )}
 
-                      <button onClick={closeProfileModal} className="px-3 py-1 border border-white/20 rounded text-[var(--text-secondary)]">Close</button>
+                      <button onClick={closeProfileModal} className="px-3 py-1 border border-white/20 rounded text-(--text-secondary)">Close</button>
                     </div>
                   </div>
                 ) : null}
