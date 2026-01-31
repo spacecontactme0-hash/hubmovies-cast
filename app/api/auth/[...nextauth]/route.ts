@@ -144,7 +144,7 @@ export const authOptions: NextAuthConfig = {
       } else if (token.id) {
         // If this is an anon-admin fallback token, skip DB refresh (DB may be unreachable)
         if (typeof token.id === "string" && token.id.startsWith("anon-admin:")) {
-          token.role = "ADMIN";
+          (token as any).role = "ADMIN";
           token.emailVerified = true;
           return token;
         }
