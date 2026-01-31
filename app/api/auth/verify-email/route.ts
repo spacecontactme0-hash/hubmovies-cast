@@ -61,7 +61,7 @@ export async function GET(req: Request) {
         redirectUrl = "/director/dashboard";
       }
     } else if (user.role === "ADMIN") {
-      redirectUrl = "/admin/jobs";
+      redirectUrl = "/admin";
     }
 
     // Redirect to password sign-in page with verified status

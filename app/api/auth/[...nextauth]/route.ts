@@ -36,8 +36,16 @@ export const authOptions: NextAuthConfig = {
         const email = credentials.email as string;
         const password = credentials.password as string;
 
-        await connectDB();
-        let user = await User.findOne({ email });
+        // Try to find user in DB; if DB is unreachable, we fall back to env-based admin
+        let user: any = null;
+        let dbError = null;
+        try {
+          await connectDB();
+          user = await User.findOne({ email });
+        } catch (err) {
+          dbError = err;
+          console.error("DB error during authorize:", err);
+        }
 
         // If user exists and has a password hash, verify it
         if (user && user.passwordHash) {
@@ -56,37 +64,53 @@ export const authOptions: NextAuthConfig = {
         }
 
         // If user doesn't exist or has no password, check hardcoded admin credentials from env
-        const adminList = (process.env.ADMIN_ACCOUNTS || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+        const adminList = (process.env.ADMIN_ACCOUNTS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
         const adminPassword = process.env.ADMIN_PASSWORD;
 
         if (adminList.includes(email.toLowerCase()) && adminPassword && password === adminPassword) {
-          // Upsert admin user and mark email as verified
-          const passwordHash = await bcrypt.hash(password, 12);
-          const update = {
-            email,
-            role: "ADMIN",
-            emailVerified: new Date(),
-            passwordHash,
-            name: "Admin",
-          } as any;
+          // Attempt to upsert admin user in DB if possible
+          if (!dbError) {
+            try {
+              const passwordHash = await bcrypt.hash(password, 12);
+              const update = {
+                email,
+                role: "ADMIN",
+                emailVerified: new Date(),
+                passwordHash,
+                name: "Admin",
+              } as any;
 
-          const adminUser = await User.findOneAndUpdate({ email }, update, {
-            upsert: true,
-            new: true,
-            setDefaultsOnInsert: true,
-          });
+              const adminUser = await User.findOneAndUpdate({ email }, update, {
+                upsert: true,
+                new: true,
+                setDefaultsOnInsert: true,
+              });
 
-          if (!adminUser) return null;
+              if (adminUser) {
+                return {
+                  id: adminUser._id.toString(),
+                  email: adminUser.email!,
+                  name: adminUser.name,
+                  image: adminUser.image,
+                  role: adminUser.role,
+                  emailVerified: !!adminUser.emailVerified,
+                  profileCompletion: adminUser.profileCompletion || 0,
+                };
+              }
+            } catch (err) {
+              console.error("DB error upserting admin:", err);
+            }
+          }
 
+          // If DB is unreachable or upsert failed, return an in-memory fallback admin user
           return {
-            id: adminUser._id.toString(),
-            email: adminUser.email!,
-            name: adminUser.name,
-            image: adminUser.image,
-            role: adminUser.role,
-            emailVerified: !!adminUser.emailVerified,
-            profileCompletion: adminUser.profileCompletion || 0,
-          };
+            id: `anon-admin:${email}`,
+            email,
+            name: "Admin",
+            role: "ADMIN",
+            emailVerified: true,
+            profileCompletion: 100,
+          } as any;
         }
 
         // Otherwise deny access
@@ -108,22 +132,39 @@ export const authOptions: NextAuthConfig = {
       // Initial sign in - user object is available
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || (user as any).role;
+        token.role = (user as any).role || token.role;
         token.emailVerified = (user as any).emailVerified || false;
         token.name = (user as any).name;
         token.profileCompletion = (user as any).profileCompletion || 0;
+
+        // Mark admin fallback tokens so we can skip DB refreshes later
+        if (typeof token.id === "string" && token.id.startsWith("anon-admin:")) {
+          (token as any).isAdminFallback = true;
+        }
       } else if (token.id) {
-        // Refresh user data from database on each request
-        await connectDB();
-        const dbUser = await User.findById(token.id);
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.emailVerified = !!dbUser.emailVerified;
-          token.name = dbUser.name;
-          token.profileCompletion = dbUser.profileCompletion || 0;
+        // If this is an anon-admin fallback token, skip DB refresh (DB may be unreachable)
+        if (typeof token.id === "string" && token.id.startsWith("anon-admin:")) {
+          token.role = "ADMIN";
+          token.emailVerified = true;
+          return token;
+        }
+
+        // Otherwise attempt to refresh from DB, but don't throw on errors
+        try {
+          await connectDB();
+          const dbUser = await User.findById(token.id as any);
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.emailVerified = !!dbUser.emailVerified;
+            token.name = dbUser.name;
+            token.profileCompletion = dbUser.profileCompletion || 0;
+          }
+        } catch (err) {
+          console.error("JWT refresh error:", err);
+          // Leave token as-is so user can remain signed in (best-effort)
         }
       }
-      
+
       return token;
     },
     async session({ session, token }) {

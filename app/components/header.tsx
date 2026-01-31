@@ -90,90 +90,98 @@ export default function Header() {
           ) : session?.user ? (
             <>
               <NotificationBell />
-              {/* User Menu with Dropdown */}
+              {/* User Menu with Dropdown (supports ADMIN, DIRECTOR, TALENT) */}
               <div className="relative flex items-center gap-2 sm:gap-3" ref={menuRef}>
-                {user?.role === "ADMIN" ? (
-                  <span className="text-xs sm:text-sm text-white font-medium">Welcome Admin</span>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => setShowMenu(!showMenu)}
-                      className="flex items-center gap-2 sm:gap-3 focus:outline-none"
-                    >
-                      {user?.image ? (
-                        <img
-                          src={user.image}
-                          alt={user.name || "User"}
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-white/20 cursor-pointer hover:border-[var(--accent-gold)]/50 transition"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[var(--accent-gold)]/20 border border-[var(--accent-gold)]/30 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-[var(--accent-gold)]/50 transition">
-                          <span className="text-[var(--accent-gold)] text-xs font-medium">
-                            {(user?.name || user?.email || "U")[0].toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      {shouldShowName && (
-                        <span className="text-xs sm:text-sm text-white font-medium hidden sm:block max-w-[100px] truncate">
-                          {user?.name || user?.email?.split("@")[0] || "User"}
+                <>
+                  <button
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="flex items-center gap-2 sm:gap-3 focus:outline-none"
+                    aria-label="User menu"
+                  >
+                    {user?.image ? (
+                      <img
+                        src={user.image}
+                        alt={user.name || "User"}
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-white/20 cursor-pointer hover:border-[var(--accent-gold)]/50 transition"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[var(--accent-gold)]/20 border border-[var(--accent-gold)]/30 flex items-center justify-center flex-shrink-0 cursor-pointer hover:border-[var(--accent-gold)]/50 transition">
+                        <span className="text-[var(--accent-gold)] text-xs font-medium">
+                          {(user?.name || user?.email || "U")[0].toUpperCase()}
                         </span>
-                      )}
-                    </button>
-                    
-                    {/* Dropdown Menu */}
-                    {showMenu && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full right-0 mt-2 w-48 bg-[var(--bg-main)] border border-white/10 rounded-lg shadow-lg z-50 overflow-hidden"
-                      >
-                        <div className="py-1">
-                          {user?.role === "DIRECTOR" ? (
-                            <Link
-                              href="/director/dashboard"
-                              onClick={() => setShowMenu(false)}
-                              className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
-                            >
-                              Dashboard
-                            </Link>
-                          ) : user?.role === "TALENT" ? (
-                            <Link
-                              href="/talent/dashboard"
-                              onClick={() => setShowMenu(false)}
-                              className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
-                            >
-                              Dashboard
-                            </Link>
-                          ) : null}
-                          
+                      </div>
+                    )}
+
+                    {/* Show role/name for admins too */}
+                    <span className="text-xs sm:text-sm text-white font-medium hidden sm:block max-w-[120px] truncate">
+                      {user?.role === "ADMIN" ? "Admin" : user?.name || user?.email?.split("@")[0] || "User"}
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-full right-0 mt-2 w-48 bg-[var(--bg-main)] border border-white/10 rounded-lg shadow-lg z-50 overflow-hidden"
+                    >
+                      <div className="py-1">
+                        {user?.role === "DIRECTOR" ? (
                           <Link
-                            href={user?.role === "TALENT" ? "/talent/profile" : user?.role === "DIRECTOR" ? "/director/dashboard" : "/admin/jobs"}
+                            href="/director/dashboard"
                             onClick={() => setShowMenu(false)}
                             className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
                           >
-                            Profile
+                            Dashboard
                           </Link>
-                          
-                          <div className="border-t border-white/10 my-1" />
-                          
-                          <button
-                            onClick={() => {
-                              setShowMenu(false);
-                              signOut({ redirect: false }).then(() => {
-                                router.push("/");
-                                router.refresh();
-                              });
-                            }}
-                            className="block w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-white/10 hover:text-white transition"
+                        ) : user?.role === "TALENT" ? (
+                          <Link
+                            href="/talent/dashboard"
+                            onClick={() => setShowMenu(false)}
+                            className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
                           >
-                            Sign Out
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </>
-                )}
+                            Dashboard
+                          </Link>
+                        ) : null}
+
+                        {/* Admin dashboard */}
+                        {user?.role === "ADMIN" && (
+                          <Link
+                            href="/admin/jobs"
+                            onClick={() => setShowMenu(false)}
+                            className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
+
+                        <Link
+                            href={user?.role === "TALENT" ? "/talent/profile" : user?.role === "DIRECTOR" ? "/director/dashboard" : "/admin"}
+                          onClick={() => setShowMenu(false)}
+                          className="block px-4 py-2 text-sm text-white hover:bg-white/10 transition"
+                        >
+                          Profile
+                        </Link>
+
+                        <div className="border-t border-white/10 my-1" />
+
+                        <button
+                          onClick={() => {
+                            setShowMenu(false);
+                            signOut({ redirect: false }).then(() => {
+                              router.push("/");
+                              router.refresh();
+                            });
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-white/10 hover:text-white transition"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </>
               </div>
             </>
           ) : (

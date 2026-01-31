@@ -43,16 +43,13 @@ const UserSchema = new mongoose.Schema(
     restrictionReason: { type: String }, // Reason for restriction
     restrictionExpiresAt: { type: Date }, // When restriction expires (null = indefinite)
     restrictedBy: { type: String }, // Admin ID who applied restriction
-    // Payment verification
-    paymentConfirmed: { type: Boolean, default: false, index: true }, // Admin confirmed payment
-    paymentMethod: { type: String, enum: ["ETH", "BTC", null], default: null },
-    paymentReference: { type: String },
-    paymentAt: { type: Date },
   },
   { timestamps: true }
 );
 
-// Performance indexes (per-field indexes are defined inline)
+// Performance indexes
+UserSchema.index({ email: 1 });
+UserSchema.index({ role: 1 });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);
 

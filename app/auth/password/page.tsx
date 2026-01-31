@@ -97,7 +97,7 @@ function PasswordLoginPage() {
             if (redirectUrl) {
               window.location.href = redirectUrl;
             } else if (userRole === "ADMIN") {
-              window.location.href = "/admin/jobs";
+              window.location.href = "/admin";
             } else if (userRole === "DIRECTOR") {
               window.location.href = "/director/dashboard";
             } else if (userRole === "TALENT") {
@@ -124,7 +124,7 @@ function PasswordLoginPage() {
               if (redirectUrl) {
                 window.location.href = redirectUrl;
               } else if (userRole === "ADMIN") {
-                window.location.href = "/admin/jobs";
+                window.location.href = "/admin";
               } else if (userRole === "DIRECTOR") {
                 window.location.href = "/director/dashboard";
               } else if (userRole === "TALENT") {
