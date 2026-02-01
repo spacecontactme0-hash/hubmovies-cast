@@ -88,13 +88,14 @@ export default function CreateJobModal({ onClose, onSubmit, showDirectorSelector
 
   return (
     <ModalShell onClose={onClose}>
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 40 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="space-y-6"
-      >
+      <div className="max-h-[72vh] overflow-y-auto pr-2">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 40 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="space-y-6 p-2 sm:p-0"
+        >
         {/* Header */}
         <div>
           <p className="text-xs tracking-[0.3em] text-[var(--accent-gold)] mb-2">
@@ -210,8 +211,8 @@ export default function CreateJobModal({ onClose, onSubmit, showDirectorSelector
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              rows={4}
-              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50 resize-none"
+              rows={3}
+              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50 resize-none max-h-40"
             />
           </div>
 
@@ -219,20 +220,21 @@ export default function CreateJobModal({ onClose, onSubmit, showDirectorSelector
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:flex-1 px-6 py-3 border border-white/20 text-white rounded hover:bg-white/10 transition"
+              className="w-full sm:flex-1 px-4 py-2 text-sm border border-white/20 text-white rounded hover:bg-white/10 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="w-full sm:flex-1 px-6 py-3 bg-(--accent-gold) text-black rounded hover:opacity-90 transition disabled:opacity-50"
+              className="w-full sm:flex-1 px-4 py-2 text-sm bg-(--accent-gold) text-black rounded hover:opacity-90 transition disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create Job"}
             </button>
           </div>
         </form>
       </motion.div>
+      </div>
     </ModalShell>
   );
 }

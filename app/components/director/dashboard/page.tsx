@@ -388,13 +388,13 @@ export default function CastingDashboard() {
       {/* Cinematic background gradient */}
       <div className="fixed inset-0 bg-gradient-to-b from-black/60 via-[var(--bg-main)] to-[var(--bg-main)] pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8 sm:px-6 sm:py-12">
         {/* Header with cinematic background */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mb-12 relative overflow-hidden rounded-lg"
+          className="mb-8 sm:mb-12 relative overflow-hidden rounded-lg"
         >
           {/* Background image */}
           <div
@@ -407,7 +407,7 @@ export default function CastingDashboard() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
 
           {/* Content */}
-          <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="relative z-10 p-4 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
               <p className="text-xs tracking-[0.3em] text-[var(--accent-gold)] mb-3">
                 CASTING DIRECTOR

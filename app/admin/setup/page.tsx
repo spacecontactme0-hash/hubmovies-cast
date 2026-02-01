@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function AdminSetupPage() {
   const [email, setEmail] = useState("enjayjerey@gmail.com");
@@ -43,10 +44,15 @@ export default function AdminSetupPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white/5 border border-white/10 rounded-lg p-8"
       >
-        <h1 className="text-2xl font-heading text-white mb-4">Admin Setup</h1>
-        <p className="text-sm text-(--text-secondary) mb-6">
-          Create the initial admin user account
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div>
+            <h1 className="text-2xl font-heading text-white mb-1">Admin Setup</h1>
+            <p className="text-sm text-(--text-secondary)">Create the initial admin user account</p>
+          </div>
+          <div>
+            <Link href="/admin" className="px-3 py-2 border border-white/20 text-white rounded hover:bg-white/10">← Back to Admin</Link>
+          </div>
+        </div>
 
         {message && (
           <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded text-sm text-green-400">

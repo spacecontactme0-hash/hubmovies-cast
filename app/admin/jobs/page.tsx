@@ -96,9 +96,9 @@ export default function AdminJobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] p-8">
+    <div className="min-h-screen bg-[var(--bg-main)] p-4 sm:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h1 className="text-4xl font-heading text-white">Admin: Job Management</h1>
           <div className="flex gap-2">
             <button
@@ -185,7 +185,7 @@ export default function AdminJobsPage() {
                 key={job._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 border border-white/10 rounded-lg p-6"
+                className="bg-white/5 border border-white/10 rounded-lg p-4 sm:p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -227,7 +227,7 @@ export default function AdminJobsPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-4 border-t border-white/10">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
                   <button
                     onClick={() => router.push(`/admin/jobs/${job._id}/applications`)}
                     className="px-4 py-2 border border-white/20 text-white rounded hover:bg-white/10 transition"

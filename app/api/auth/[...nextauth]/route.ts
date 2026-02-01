@@ -30,104 +30,34 @@ export const authOptions: NextAuthConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.warn("Authorize called with missing credentials");
-          throw new Error("MISSING_CREDENTIALS");
+          return null;
         }
 
         const email = credentials.email as string;
         const password = credentials.password as string;
 
-        // Try to find user in DB; if DB is unreachable, we fall back to env-based admin
-        let user: any = null;
-        let dbError: any = null;
-        try {
-          await connectDB();
-          user = await User.findOne({ email });
-        } catch (err) {
-          dbError = err;
-          console.error("DB error during authorize:", err);
+        await connectDB();
+        const user = await User.findOne({ email });
+
+        if (!user || !user.passwordHash) {
+          return null;
         }
 
-        // If user exists and has a password hash, verify it
-        if (user && user.passwordHash) {
-          try {
-            const isValid = await bcrypt.compare(password, user.passwordHash);
-            if (!isValid) {
-              console.warn(`Invalid password for user ${email}`);
-              throw new Error("INVALID_CREDENTIALS");
-            }
+        const isValid = await bcrypt.compare(password, user.passwordHash);
 
-            return {
-              id: user._id.toString(),
-              email: user.email!,
-              name: user.name,
-              image: user.image,
-              role: user.role,
-              emailVerified: !!user.emailVerified,
-              profileCompletion: user.profileCompletion || 0,
-            };
-          } catch (err) {
-            console.error("Error verifying password:", err);
-            throw new Error("INVALID_CREDENTIALS");
-          }
+        if (!isValid) {
+          return null;
         }
 
-        // If user doesn't exist or has no password, check hardcoded admin credentials from env
-        const adminList = (process.env.ADMIN_ACCOUNTS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-        const adminPassword = process.env.ADMIN_PASSWORD;
-
-        if (adminList.includes(email.toLowerCase()) && adminPassword && password === adminPassword) {
-          // Attempt to upsert admin user in DB if possible
-          if (!dbError) {
-            try {
-              const passwordHash = await bcrypt.hash(password, 12);
-              const update = {
-                email,
-                role: "ADMIN",
-                emailVerified: new Date(),
-                passwordHash,
-                name: "Admin",
-              } as any;
-
-              const adminUser = await User.findOneAndUpdate({ email }, update, {
-                upsert: true,
-                new: true,
-                setDefaultsOnInsert: true,
-              });
-
-              if (adminUser) {
-                console.info(`Admin upserted in DB: ${email}`);
-                return {
-                  id: adminUser._id.toString(),
-                  email: adminUser.email!,
-                  name: adminUser.name,
-                  image: adminUser.image,
-                  role: adminUser.role,
-                  emailVerified: !!adminUser.emailVerified,
-                  profileCompletion: adminUser.profileCompletion || 0,
-                };
-              }
-            } catch (err) {
-              dbError = err;
-              console.error("DB error upserting admin:", err);
-            }
-          }
-
-          // If DB is unreachable or upsert failed, return an in-memory fallback admin user
-          console.warn(`Using anon-admin fallback for ${email} (DB error: ${!!dbError})`);
-          return {
-            id: `anon-admin:${email}`,
-            email,
-            name: "Admin",
-            role: "ADMIN",
-            emailVerified: true,
-            profileCompletion: 100,
-          } as any;
-        }
-
-        // Otherwise deny access
-        console.warn(`Authorization failed for ${email}`);
-        throw new Error("INVALID_CREDENTIALS");
+        return {
+          id: user._id.toString(),
+          email: user.email!,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+          emailVerified: !!user.emailVerified,
+          profileCompletion: user.profileCompletion || 0,
+        };
       },
     }),
   ],
@@ -145,39 +75,22 @@ export const authOptions: NextAuthConfig = {
       // Initial sign in - user object is available
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || token.role;
+        token.role = (user as any).role || (user as any).role;
         token.emailVerified = (user as any).emailVerified || false;
         token.name = (user as any).name;
         token.profileCompletion = (user as any).profileCompletion || 0;
-
-        // Mark admin fallback tokens so we can skip DB refreshes later
-        if (typeof token.id === "string" && token.id.startsWith("anon-admin:")) {
-          (token as any).isAdminFallback = true;
-        }
       } else if (token.id) {
-        // If this is an anon-admin fallback token, skip DB refresh (DB may be unreachable)
-        if (typeof token.id === "string" && token.id.startsWith("anon-admin:")) {
-          (token as any).role = "ADMIN";
-          token.emailVerified = true;
-          return token;
-        }
-
-        // Otherwise attempt to refresh from DB, but don't throw on errors
-        try {
-          await connectDB();
-          const dbUser = await User.findById(token.id as any);
-          if (dbUser) {
-            token.role = dbUser.role;
-            token.emailVerified = !!dbUser.emailVerified;
-            token.name = dbUser.name;
-            token.profileCompletion = dbUser.profileCompletion || 0;
-          }
-        } catch (err) {
-          console.error("JWT refresh error:", err);
-          // Leave token as-is so user can remain signed in (best-effort)
+        // Refresh user data from database on each request
+        await connectDB();
+        const dbUser = await User.findById(token.id);
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.emailVerified = !!dbUser.emailVerified;
+          token.name = dbUser.name;
+          token.profileCompletion = dbUser.profileCompletion || 0;
         }
       }
-
+      
       return token;
     },
     async session({ session, token }) {

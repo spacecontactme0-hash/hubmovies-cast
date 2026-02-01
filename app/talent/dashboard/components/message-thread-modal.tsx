@@ -77,7 +77,7 @@ export default function MessageThreadModal({
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="border-b border-white/10 p-6">
+          <div className="border-b border-white/10 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-heading font-semibold">Messages</h2>
@@ -98,7 +98,7 @@ export default function MessageThreadModal({
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {loading ? (
               <div className="text-center text-[var(--text-secondary)]">
                 Loading messages...
@@ -133,7 +133,7 @@ export default function MessageThreadModal({
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/10 p-6">
+          <div className="border-t border-white/10 p-4">
             <p className="text-xs text-[var(--text-secondary)] text-center">
               Talent replies are coming soon
             </p>

@@ -1,13 +1,11 @@
+import { Suspense } from "react";
+import EmailClient from "./email-client";
+
 export default function EmailPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
-      <div className="text-center">
-        <h1 className="text-2xl text-white mb-4">Email Authentication</h1>
-        <p className="text-[var(--text-secondary)]">
-          Please check your email for the authentication link.
-        </p>
-      </div>
-    </div>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-(--bg-main)"><div className="text-white">Loading...</div></div>}>
+      <EmailClient />
+    </Suspense>
   );
 }
 

@@ -31,7 +31,7 @@ export default function DirectorTrustPanel({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
-      className="p-6 bg-white/5 border border-white/10 rounded"
+      className="p-4 sm:p-6 bg-white/5 border border-white/10 rounded"
     >
       <div className="mb-6">
         <h3 className="text-xl font-heading text-white mb-2">Trust Level</h3>

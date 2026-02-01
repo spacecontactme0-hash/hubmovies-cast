@@ -249,11 +249,51 @@ export async function sendVerificationEmail(
               <p>${verificationUrl}</p>
             </div>
             <div class="warning">
-              <strong>⚠️ Security Notice:</strong> This verification link will expire in 24 hours. If you didn't create an account, please ignore this email.
-            </div>
+              <strong>⚠️ Security Notice:</strong> This verification link will expire in 24 hours. If you didn't create an account, please ignore this email.</div>
           </div>
           <div class="footer">
             <p>This is an automated email from HubMovies Cast.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return sendEmail({ to: userEmail, subject, html });
+}
+
+/**
+ * Send OTP email for sign-in (used for one-time code flow)
+ */
+export async function sendOtpEmail(userEmail: string, otp: string, expiresMinutes = 10): Promise<boolean> {
+  const subject = "Your HubMovies sign-in code";
+  const expiryText = `${expiresMinutes} minute${expiresMinutes === 1 ? '' : 's'}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #0b0b0c; color: #f4f4f5; padding: 20px; text-align: center; }
+          .content { background: #fff; padding: 30px; border: 1px solid #e0e0e0; }
+          .code { font-size: 28px; font-weight: 700; letter-spacing: 4px; background: #f4f4f5; padding: 14px 18px; display: inline-block; margin: 20px 0; border-radius: 8px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>HubMovies Cast</h1>
+          </div>
+          <div class="content">
+            <h2>Your sign-in code</h2>
+            <p>Use the following one-time code to sign in. It will expire in ${expiryText}.</p>
+            <div class="code">${otp}</div>
+            <p>If you didn't request this code, please ignore this message.</p>
+            <p class="footer">This is an automated email from HubMovies Cast.</p>
           </div>
         </div>
       </body>
