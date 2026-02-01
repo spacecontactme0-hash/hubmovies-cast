@@ -223,45 +223,44 @@ export default function AdminUsersPage() {
             <div className="p-3 bg-red-500/20 rounded text-red-400">{error}</div>
           ) : (
             <>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {users.length === 0 ? (
                   <p className="text-(--text-secondary)">No users found.</p>
                 ) : (
                   users.map((u) => (
-                    <div key={u._id} className="flex items-center justify-between bg-white/3 p-3 rounded">
+                    <div key={u._id} className="bg-white/3 p-3 rounded">
                       <div>
                         <div className="text-white font-medium">{u.name || u.email}</div>
                         <div className="text-sm text-(--text-secondary)">{u.email} • {u.role} • Registered {new Date(u.createdAt).toLocaleDateString()}</div>
                       </div>
 
-                      <div className="flex gap-2 items-center">
-                        {/* Role selector */}
+                      <div className="grid grid-cols-2 gap-2 mt-3">
                         <select
                           value={u.role}
                           onChange={(e) => changeRole(u._id, e.target.value)}
-                          className="px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-sm"
+                          className="col-span-2 px-2 py-2 bg-white/5 border border-white/10 rounded text-white text-sm w-full"
                         >
                           <option value="TALENT">Talent</option>
                           <option value="DIRECTOR">Director</option>
                           <option value="ADMIN">Admin</option>
                         </select>
 
-                        <button onClick={() => openProfile(u._id)} className="px-3 py-1 border border-white/20 text-white rounded hover:bg-white/10">View</button>
+                        <button onClick={() => openProfile(u._id)} className="px-3 py-2 border border-white/20 text-white rounded hover:bg-white/10">View</button>
 
                         {!u.frozen ? (
-                          <button onClick={() => freezeUser(u._id)} className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Freeze</button>
+                          <button onClick={() => freezeUser(u._id)} className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Freeze</button>
                         ) : (
-                          <button onClick={() => unfreezeUser(u._id)} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">Unfreeze</button>
+                          <button onClick={() => unfreezeUser(u._id)} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700">Unfreeze</button>
                         )}
 
                         {!u.paymentConfirmed && (
-                          <button onClick={() => confirmPayment(u._id)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Confirm Payment</button>
+                          <button onClick={() => confirmPayment(u._id)} className="col-span-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Confirm Payment</button>
                         )}
                       </div>
                     </div>
                   ))
                 )}
-              </div>
+              </div> 
 
               {/* Pagination */}
               {pagination.pages > 1 && (

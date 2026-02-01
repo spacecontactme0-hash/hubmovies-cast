@@ -98,7 +98,7 @@ export default function AdminJobsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] p-4 sm:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h1 className="text-4xl font-heading text-white">Admin: Job Management</h1>
           <div className="flex gap-2">
             <button

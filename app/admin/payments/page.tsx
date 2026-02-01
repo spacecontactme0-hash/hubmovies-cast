@@ -216,7 +216,7 @@ export default function AdminPaymentsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <h1 className="text-4xl font-heading text-white">Admin: Payments</h1>
           <div className="flex gap-2">
             <Link
@@ -292,7 +292,7 @@ export default function AdminPaymentsPage() {
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] mt-1">Default amount talents must pay to register</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm text-[var(--text-secondary)] mb-1">
                       ETH Price Equivalent (USD)
