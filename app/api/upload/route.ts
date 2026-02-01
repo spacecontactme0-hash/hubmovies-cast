@@ -29,10 +29,15 @@ export async function POST(req: Request) {
     const fileType = file.type;
     const isVideo = fileType.startsWith("video/");
     const isImage = fileType.startsWith("image/");
+    const isDocument = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ].includes(fileType);
 
-    if (!isVideo && !isImage) {
+    if (!isVideo && !isImage && !isDocument) {
       return NextResponse.json(
-        { error: "Invalid file type. Only images and videos are allowed." },
+        { error: "Invalid file type. Only images, videos and documents (PDF/DOC) are allowed." },
         { status: 400 }
       );
     }
@@ -45,7 +50,7 @@ export async function POST(req: Request) {
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          resource_type: isVideo ? "video" : "image",
+          resource_type: isVideo ? "video" : isDocument ? "raw" : "image",
           folder: "hubmovies",
         },
         (error, result) => {

@@ -26,6 +26,7 @@ export default function TalentProfilePage() {
   const session = sessionResult?.data;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const portfolioInputRef = useRef<HTMLInputElement>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,6 +45,7 @@ export default function TalentProfilePage() {
     skills: [] as string[],
     experience: [] as string[],
     portfolio: [] as string[],
+    cv: "",
   });
 
   const [skillInput, setSkillInput] = useState("");
@@ -205,6 +207,48 @@ export default function TalentProfilePage() {
     }
 
     setUploadingPortfolio(false);
+  };
+
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate document types
+    const allowed = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (!allowed.includes(file.type)) {
+      setError("Invalid CV format. Please upload PDF or DOC/DOCX.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError("CV file too large. Maximum size is 10MB.");
+      return;
+    }
+
+    setError("");
+    setUploadingPortfolio(true);
+
+    try {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      if (res.ok) {
+        const data = await res.json();
+        setFormData((prev) => ({ ...prev, cv: data.url }));
+      } else {
+        setError("Failed to upload CV. Please try again.");
+      }
+    } catch (err) {
+      console.error("Failed to upload CV:", err);
+      setError("Failed to upload CV. Please try again.");
+    } finally {
+      setUploadingPortfolio(false);
+    }
   };
 
   const handleRemovePortfolioItem = (url: string) => {
@@ -589,6 +633,21 @@ export default function TalentProfilePage() {
             <h2 className="text-xl font-heading text-white mb-6">Portfolio</h2>
             
             <div className="mb-4">
+              <div className="mb-4">
+                <label className="block text-sm text-[var(--text-secondary)] mb-2 font-body">CV / Resume <span className="text-xs text-[var(--text-secondary)]">(PDF/DOC)</span></label>
+                <div className="flex items-center gap-4">
+                  {formData.cv ? (
+                    <div className="flex items-center gap-3">
+                      <a href={formData.cv} target="_blank" rel="noreferrer" className="text-[var(--accent-gold)] hover:underline">View CV</a>
+                      <button type="button" onClick={() => setFormData({ ...formData, cv: "" })} className="px-2 py-1 text-xs bg-red-600 rounded text-white">Remove</button>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-[var(--text-secondary)]">No CV uploaded</div>
+                  )}
+                  <input ref={cvInputRef} type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={handleCvUpload} className="hidden" />
+                  <button type="button" onClick={() => cvInputRef.current?.click()} className="px-4 py-2 bg-white/5 border border-white/10 text-white text-sm rounded hover:bg-white/10 transition">{uploadingPortfolio ? "Uploading..." : formData.cv ? "Change CV" : "Upload CV"}</button>
+                </div>
+              </div>
               <input
                 ref={portfolioInputRef}
                 type="file"

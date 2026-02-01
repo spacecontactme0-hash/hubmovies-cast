@@ -61,16 +61,18 @@ function SignupContent() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("Account created! Please check your email and click the verification link to sign in.");
-        // Redirect to check email page after a short delay
+        console.log("✅ Account created successfully", { email, role });
+        setMessage("Account created! Please enter the OTP we just sent to your email.");
+        // Redirect to OTP entry page after a short delay
         setTimeout(() => {
-          router.push("/auth/check-email");
-        }, 2000);
+          router.push("/auth/send-otp");
+        }, 1000);
       } else {
+        console.error("❌ Signup failed", { status: res.status, error: data.error, email });
         setError(data.error || "Failed to create account. Please try again.");
       }
     } catch (err) {
-      console.error("Signup error:", err);
+      console.error("❌ Signup error:", err, { email, role });
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

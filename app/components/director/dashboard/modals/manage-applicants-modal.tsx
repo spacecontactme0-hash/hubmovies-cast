@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ModalShell from "@/app/components/modals/modal-shell";
 import ApplicationsPanel from "../components/applications-panel";
+import TalentProfileModal from "@/app/components/talent-profile-modal";
 
 type Application = {
   _id: string;
@@ -40,6 +42,27 @@ export default function ManageApplicantsModal({
   onMessage,
   onBulkAction,
 }: ManageApplicantsModalProps) {
+  const [selectedTalentProfile, setSelectedTalentProfile] = useState<any | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+
+  const handleViewProfile = async (talentId: string) => {
+    try {
+      setLoadingProfile(true);
+      const res = await fetch(`/api/director/talent/${talentId}/profile`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedTalentProfile(data.user);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to load profile");
+      }
+    } catch (err) {
+      console.error("Failed to fetch talent profile:", err);
+      alert("Network error while fetching profile. Check console for details.");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
   return (
     <ModalShell onClose={onClose}>
       <motion.div
@@ -68,7 +91,16 @@ export default function ManageApplicantsModal({
           onReject={onReject}
           onMessage={onMessage}
           onBulkAction={onBulkAction}
+          onViewProfile={handleViewProfile}
         />
+
+        {/* Talent Profile Modal */}
+        {selectedTalentProfile && (
+          <TalentProfileModal
+            talent={selectedTalentProfile}
+            onClose={() => setSelectedTalentProfile(null)}
+          />
+        )}
       </motion.div>
     </ModalShell>
   );

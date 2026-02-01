@@ -21,6 +21,7 @@ type ApplicationsPanelProps = {
   onReject: (id: string) => void;
   onMessage: (id: string) => void;
   onBulkAction?: (ids: string[], action: "shortlist" | "reject") => void;
+  onViewProfile?: (talentId: string) => void;
 };
 
 export default function ApplicationsPanel({
@@ -199,6 +200,7 @@ export default function ApplicationsPanel({
                 onShortlist={onShortlist}
                 onReject={onReject}
                 onMessage={onMessage}
+                onViewProfile={onViewProfile}
                 selected={selectedIds.has(app._id)}
                 onToggleSelect={onBulkAction ? () => handleToggleSelect(app._id) : undefined}
               />

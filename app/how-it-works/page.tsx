@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
             </p>
             <div className="flex gap-4 justify-center">
               <a
-                href="/signup"
+                href="/auth"
                 className="px-8 py-3 bg-[var(--accent-gold)] text-black hover:opacity-90 transition font-medium"
               >
                 Get Started

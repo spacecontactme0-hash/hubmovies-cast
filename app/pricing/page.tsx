@@ -95,7 +95,7 @@ export default function PricingPage() {
                 </ul>
 
                 <a
-                  href="/signup"
+                  href="/auth"
                   className={`block w-full text-center py-3 transition ${
                     plan.highlight
                       ? "bg-[var(--accent-gold)] text-black hover:opacity-90"

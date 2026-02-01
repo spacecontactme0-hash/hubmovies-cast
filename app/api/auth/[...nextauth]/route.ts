@@ -67,7 +67,7 @@ export const authOptions: NextAuthConfig = {
   },
   pages: {
     signIn: "/auth",
-    verifyRequest: "/auth/check-email",
+    verifyRequest: "/auth/send-otp",
     error: "/auth/error",
   },
   callbacks: {

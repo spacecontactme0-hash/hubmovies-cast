@@ -17,6 +17,7 @@ type ApplicationRowProps = {
   onShortlist: (id: string) => void;
   onReject: (id: string) => void;
   onMessage: (id: string) => void;
+  onViewProfile?: (talentId: string) => void;
   selected?: boolean;
   onToggleSelect?: () => void;
 };
@@ -129,6 +130,12 @@ export default function ApplicationRow({
               View Media
             </a>
             <div className="flex gap-2 ml-auto">
+            <button
+              onClick={() => onViewProfile && onViewProfile(application.talentId)}
+              className="px-3 py-1 text-sm border border-white/20 text-white rounded hover:bg-white/10 transition mr-2"
+            >
+              View Profile
+            </button>
               {application.status === "submitted" && (
                 <>
                   <button

@@ -186,7 +186,7 @@ export default function Header() {
                 Sign In
               </Link>
               <Link
-                href="/signup"
+                href="/auth"
                 className="px-3 sm:px-4 py-1.5 sm:py-2 border border-[var(--accent-gold)] text-[var(--accent-gold)] text-xs sm:text-sm hover:bg-[var(--accent-gold)] hover:text-black transition whitespace-nowrap"
               >
                 Get Started

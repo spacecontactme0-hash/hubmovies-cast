@@ -53,6 +53,7 @@ export async function GET() {
         skills: user.skills || [],
         experience: user.experience || [],
         portfolio: user.portfolio || [],
+        cv: user.cv || null,
         profileCompletion: completion.score,
         verificationTier: tier,
       },
@@ -107,6 +108,7 @@ export async function PATCH(req: Request) {
       skills,
       experience,
       portfolio,
+      cv,
     } = body;
 
     // Update user fields
@@ -119,6 +121,7 @@ export async function PATCH(req: Request) {
     if (skills !== undefined) updateData.skills = skills;
     if (experience !== undefined) updateData.experience = experience;
     if (portfolio !== undefined) updateData.portfolio = portfolio;
+    if (cv !== undefined) updateData.cv = cv;
 
     // Update user
     const user = await User.findByIdAndUpdate(
@@ -157,6 +160,7 @@ export async function PATCH(req: Request) {
         skills: user.skills || [],
         experience: user.experience || [],
         portfolio: user.portfolio || [],
+        cv: user.cv || null,
         profileCompletion: completion.score,
         verificationTier: tier,
       },

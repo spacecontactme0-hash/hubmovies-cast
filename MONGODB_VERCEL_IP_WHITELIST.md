@@ -35,7 +35,7 @@ Using the Admin Fallback in this Project
 
 - Environment variables:
   - `ADMIN_ACCOUNTS` - comma-separated emails that should be able to sign in as ADMIN (e.g. `spacecontactme0@gmail.com,creativeartistagencyn@gmail.com`)
-  - `ADMIN_PASSWORD` - shared password for the above admin accounts (e.g. `admin@4567`)
+  
 
 - Where to set them:
   - Locally: add to `.env.local` (already added in this repo if you followed previous instructions).

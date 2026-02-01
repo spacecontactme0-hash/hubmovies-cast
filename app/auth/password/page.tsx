@@ -74,9 +74,11 @@ function PasswordLoginPage() {
       });
 
       if (result?.error) {
+        console.error("❌ Signin failed", { email, error: result.error });
         setError("Invalid email or password");
         setLoading(false);
       } else if (result?.ok) {
+        console.log("✅ Credentials verified", { email });
         // Show session loader
         setEstablishingSession(true);
         setLoading(false);
@@ -97,7 +99,21 @@ function PasswordLoginPage() {
             if (redirectUrl) {
               window.location.href = redirectUrl;
             } else if (userRole === "ADMIN") {
-              window.location.href = "/admin/jobs";
+              try {
+                // Test dashboard access before redirecting
+                const dashRes = await fetch("/admin/jobs");
+                if (dashRes.ok) {
+                  window.location.href = "/admin/jobs";
+                } else {
+                  console.error(`Admin dashboard fetch failed: ${dashRes.status}`);
+                  setError("Failed to access admin dashboard. Please refresh and try again.");
+                  setEstablishingSession(false);
+                }
+              } catch (err) {
+                console.error("Error testing admin dashboard access:", err);
+                setError("Failed to access admin dashboard. Please refresh and try again.");
+                setEstablishingSession(false);
+              }
             } else if (userRole === "DIRECTOR") {
               window.location.href = "/director/dashboard";
             } else if (userRole === "TALENT") {
@@ -106,12 +122,13 @@ function PasswordLoginPage() {
               window.location.href = "/";
             }
           } else {
+            console.error("❌ Session established but no user data", { email, session });
             setError("Session established but user data not found. Please try again.");
             setEstablishingSession(false);
           }
         } catch (sessionError) {
           // If initial attempt fails, try once more
-          console.log("First session attempt failed, retrying...");
+          console.log("⚠️ First session attempt failed, retrying...", { email, error: sessionError });
           
           try {
             await new Promise((resolve) => setTimeout(resolve, 500));
@@ -124,7 +141,21 @@ function PasswordLoginPage() {
               if (redirectUrl) {
                 window.location.href = redirectUrl;
               } else if (userRole === "ADMIN") {
-                window.location.href = "/admin/jobs";
+                try {
+                  // Test dashboard access before redirecting
+                  const dashRes = await fetch("/admin/jobs");
+                  if (dashRes.ok) {
+                    window.location.href = "/admin/jobs";
+                  } else {
+                    console.error(`Admin dashboard fetch failed: ${dashRes.status}`);
+                    setError("Failed to access admin dashboard. Please refresh and try again.");
+                    setEstablishingSession(false);
+                  }
+                } catch (err) {
+                  console.error("Error testing admin dashboard access:", err);
+                  setError("Failed to access admin dashboard. Please refresh and try again.");
+                  setEstablishingSession(false);
+                }
               } else if (userRole === "DIRECTOR") {
                 window.location.href = "/director/dashboard";
               } else if (userRole === "TALENT") {
@@ -133,16 +164,19 @@ function PasswordLoginPage() {
                 window.location.href = "/";
               }
             } else {
+              console.error("❌ Session established but no user data on retry", { email });
               setError("Unable to establish session. Please try logging in again.");
               setEstablishingSession(false);
             }
           } catch (retryError) {
+            console.error("❌ Session establishment failed after retry", { email, error: retryError });
             setError("Session establishment failed. Please refresh the page and try again.");
             setEstablishingSession(false);
           }
         }
       }
     } catch (err) {
+      console.error("❌ Signin error:", err, { email });
       setError("Something went wrong. Please try again.");
       setLoading(false);
       setEstablishingSession(false);

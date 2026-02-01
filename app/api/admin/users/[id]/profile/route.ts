@@ -43,6 +43,7 @@ export async function GET(
       skills: user.skills,
       experience: user.experience,
       portfolio: user.portfolio,
+      cv: user.cv,
       emailVerified: user.emailVerified,
       createdAt: user.createdAt,
     };

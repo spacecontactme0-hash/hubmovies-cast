@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema(
     skills: [{ type: String }],
     experience: [{ type: String }],
     portfolio: [{ type: String }], // Array of media URLs
+    cv: { type: String }, // CV / resume URL
     // Admin restrictions
     frozen: { type: Boolean, default: false, index: true }, // Account frozen (talent/director)
     shadowLimited: { type: Boolean, default: false }, // Reduced visibility (talent)
