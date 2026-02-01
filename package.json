@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/nodemailer": "^7.0.4",
+    "@vercel/analytics": "^1.6.1",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.8.0",
     "framer-motion": "^12.25.0",

@@ -3,6 +3,7 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { Providers } from "@/app/providers";
 import { DM_Sans, Libre_Baskerville } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next"
 
 const bodyFont = DM_Sans({
   subsets: ["latin"],
