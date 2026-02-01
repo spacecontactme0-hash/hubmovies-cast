@@ -27,6 +27,10 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
   });
   const [loading, setLoading] = useState(false);
 
+  // Make inputs full width on mobile and arrange responsive grids
+  // (mobile-first: single column, switch to two columns on sm+)
+  const gridColsClass = "grid grid-cols-1 sm:grid-cols-2 gap-4";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -75,7 +79,7 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm text-(--text-secondary) mb-2">
               Job Title *
             </label>
             <input
@@ -84,14 +88,14 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50"
+              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50"
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={gridColsClass}>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-2">
+              <label className="block text-sm text-(--text-secondary) mb-2">
                 Role Type *
               </label>
               <input
@@ -100,12 +104,12 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
                 onChange={(e) =>
                   setFormData({ ...formData, type: e.target.value })
                 }
-                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50"
+                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-2">
+              <label className="block text-sm text-(--text-secondary) mb-2">
                 Location *
               </label>
               <input
@@ -114,15 +118,15 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
                 onChange={(e) =>
                   setFormData({ ...formData, location: e.target.value })
                 }
-                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50"
+                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50"
                 required
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={gridColsClass}>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-2">
+              <label className="block text-sm text-(--text-secondary) mb-2">
                 Budget
               </label>
               <input
@@ -132,11 +136,11 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
                   setFormData({ ...formData, budget: e.target.value })
                 }
                 placeholder="$5,000 - $10,000"
-                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50"
+                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50"
               />
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-secondary)] mb-2">
+              <label className="block text-sm text-(--text-secondary) mb-2">
                 Deadline
               </label>
               <input
@@ -146,13 +150,13 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
                   setFormData({ ...formData, deadline: e.target.value })
                 }
                 placeholder="Closes in 7 days"
-                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50"
+                className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm text-[var(--text-secondary)] mb-2">
+            <label className="block text-sm text-(--text-secondary) mb-2">
               Description
             </label>
             <textarea
@@ -161,22 +165,22 @@ export default function CreateJobModal({ onClose, onSubmit }: CreateJobModalProp
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={4}
-              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-[var(--accent-gold)]/50 resize-none"
+              className="w-full bg-white/5 border border-white/10 p-3 rounded text-white focus:outline-none focus:border-(--accent-gold)/50 resize-none"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-white/20 text-white rounded hover:bg-white/10 transition"
+              className="w-full sm:flex-1 px-6 py-3 border border-white/20 text-white rounded hover:bg-white/10 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-[var(--accent-gold)] text-black rounded hover:opacity-90 transition disabled:opacity-50"
+              className="w-full sm:flex-1 px-6 py-3 bg-(--accent-gold) text-black rounded hover:opacity-90 transition disabled:opacity-50"
             >
               {loading ? "Creating..." : "Create Job"}
             </button>

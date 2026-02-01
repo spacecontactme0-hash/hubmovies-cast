@@ -23,7 +23,7 @@ export default function ModalShell({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 20 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-xl bg-[var(--bg-surface)] border border-white/10 p-8"
+        className="relative z-10 w-full max-w-md sm:max-w-xl bg-(--bg-surface) border border-white/10 p-6 sm:p-8 rounded-2xl"
       >
         {children}
       </motion.div>

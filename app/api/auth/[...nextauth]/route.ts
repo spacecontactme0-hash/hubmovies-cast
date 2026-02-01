@@ -30,7 +30,8 @@ export const authOptions: NextAuthConfig = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          console.warn("Authorize called with missing credentials");
+          throw new Error("MISSING_CREDENTIALS");
         }
 
         const email = credentials.email as string;
@@ -38,7 +39,7 @@ export const authOptions: NextAuthConfig = {
 
         // Try to find user in DB; if DB is unreachable, we fall back to env-based admin
         let user: any = null;
-        let dbError = null;
+        let dbError: any = null;
         try {
           await connectDB();
           user = await User.findOne({ email });
@@ -49,18 +50,26 @@ export const authOptions: NextAuthConfig = {
 
         // If user exists and has a password hash, verify it
         if (user && user.passwordHash) {
-          const isValid = await bcrypt.compare(password, user.passwordHash);
-          if (!isValid) return null;
+          try {
+            const isValid = await bcrypt.compare(password, user.passwordHash);
+            if (!isValid) {
+              console.warn(`Invalid password for user ${email}`);
+              throw new Error("INVALID_CREDENTIALS");
+            }
 
-          return {
-            id: user._id.toString(),
-            email: user.email!,
-            name: user.name,
-            image: user.image,
-            role: user.role,
-            emailVerified: !!user.emailVerified,
-            profileCompletion: user.profileCompletion || 0,
-          };
+            return {
+              id: user._id.toString(),
+              email: user.email!,
+              name: user.name,
+              image: user.image,
+              role: user.role,
+              emailVerified: !!user.emailVerified,
+              profileCompletion: user.profileCompletion || 0,
+            };
+          } catch (err) {
+            console.error("Error verifying password:", err);
+            throw new Error("INVALID_CREDENTIALS");
+          }
         }
 
         // If user doesn't exist or has no password, check hardcoded admin credentials from env
@@ -87,6 +96,7 @@ export const authOptions: NextAuthConfig = {
               });
 
               if (adminUser) {
+                console.info(`Admin upserted in DB: ${email}`);
                 return {
                   id: adminUser._id.toString(),
                   email: adminUser.email!,
@@ -98,11 +108,13 @@ export const authOptions: NextAuthConfig = {
                 };
               }
             } catch (err) {
+              dbError = err;
               console.error("DB error upserting admin:", err);
             }
           }
 
           // If DB is unreachable or upsert failed, return an in-memory fallback admin user
+          console.warn(`Using anon-admin fallback for ${email} (DB error: ${!!dbError})`);
           return {
             id: `anon-admin:${email}`,
             email,
@@ -114,7 +126,8 @@ export const authOptions: NextAuthConfig = {
         }
 
         // Otherwise deny access
-        return null;
+        console.warn(`Authorization failed for ${email}`);
+        throw new Error("INVALID_CREDENTIALS");
       },
     }),
   ],
