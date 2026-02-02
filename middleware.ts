@@ -60,7 +60,8 @@ export async function middleware(req: NextRequest) {
       if (path.startsWith("/api/auth/resend-verification")) {
         return NextResponse.next();
       }
-      return NextResponse.redirect(new URL("/auth/verify-email", req.url));
+      // Redirect unverified users to the OTP send page instead of the old verify-email page
+      return NextResponse.redirect(new URL("/auth/send-otp", req.url));
     }
 
     // Role-based redirection

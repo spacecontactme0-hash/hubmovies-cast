@@ -141,19 +141,8 @@ export default function AdminPaymentsPage() {
       return;
     }
 
-    const method = prompt(
-      `Confirm ${selectedUsers.size} payment(s). Enter method (ETH or BTC):`
-    );
-    if (!method) return;
-
-    const m = method.toUpperCase().trim();
-    if (m !== "ETH" && m !== "BTC") {
-      alert("Invalid method. Use ETH or BTC.");
-      return;
-    }
-
     const reason = prompt(
-      "Optional note/reason for audit log (applies to all):"
+      `Confirm ${selectedUsers.size} payment(s). Enter optional note/reason for audit log:`
     );
 
     setBulkConfirming(true);
@@ -163,8 +152,7 @@ export default function AdminPaymentsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userIds: Array.from(selectedUsers),
-          method: m,
-          reason,
+          reason: reason || undefined,
         }),
       });
 

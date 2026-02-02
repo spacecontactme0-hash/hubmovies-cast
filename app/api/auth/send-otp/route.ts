@@ -34,14 +34,16 @@ export async function POST(req: Request) {
       }
     }
 
-    // Send OTP email (best-effort)
+    // Send OTP email (best-effort) and return diagnostic
+    let emailSent = false;
     try {
-      await sendOtpEmail(email, otp, 10);
+      emailSent = await sendOtpEmail(email, otp, 10);
     } catch (err) {
       console.error("Failed to send OTP email:", err);
+      emailSent = false;
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, emailSent });
   } catch (err) {
     console.error("send-otp error:", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

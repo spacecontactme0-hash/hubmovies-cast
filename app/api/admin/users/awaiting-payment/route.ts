@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const total = await User.countDocuments(query);
 
     const users = await User.find(query)
-      .select("_id email name frozen paymentConfirmed createdAt")
+      .select("_id email name frozen paymentConfirmed paymentMethod paymentReference createdAt")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
       name: u.name,
       frozen: u.frozen,
       paymentConfirmed: u.paymentConfirmed,
+      paymentMethod: u.paymentMethod,
+      paymentReference: u.paymentReference,
       createdAt: u.createdAt,
     }));
 

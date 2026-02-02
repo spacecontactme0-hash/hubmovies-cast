@@ -69,18 +69,28 @@ export default function Header() {
 
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm tracking-wide">
-          <Link href="/jobs" className="text-[var(--text-secondary)] hover:text-white transition">
-            Jobs
-          </Link>
-          <Link href="/talents" className="text-[var(--text-secondary)] hover:text-white transition">
-            Talents
-          </Link>
-          <Link href="/how-it-works" className="text-[var(--text-secondary)] hover:text-white transition">
-            How It Works
-          </Link>
-          <Link href="/pricing" className="text-[var(--text-secondary)] hover:text-white transition">
-            Pricing
-          </Link>
+          {!session?.user ? (
+            <>
+              <Link href="/jobs" className="text-[var(--text-secondary)] hover:text-white transition">
+                Jobs
+              </Link>
+              <Link href="/talents" className="text-[var(--text-secondary)] hover:text-white transition">
+                Talents
+              </Link>
+              <Link href="/how-it-works" className="text-[var(--text-secondary)] hover:text-white transition">
+                How It Works
+              </Link>
+              <Link href="/pricing" className="text-[var(--text-secondary)] hover:text-white transition">
+                Pricing
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/" className="text-[var(--text-secondary)] hover:text-white transition">Home</Link>
+              <Link href={user?.role === "TALENT" ? "/talent/profile" : user?.role === "DIRECTOR" ? "/director/dashboard" : "/admin/jobs"} className="text-[var(--text-secondary)] hover:text-white transition">Profile</Link>
+              <Link href={user?.role === "TALENT" ? "/talent/dashboard" : user?.role === "DIRECTOR" ? "/director/dashboard" : "/admin/jobs"} className="text-[var(--text-secondary)] hover:text-white transition">Dashboard</Link>
+            </>
+          )}
         </nav>
 
         {/* Actions */}

@@ -60,7 +60,12 @@ function CompleteSignupContent() {
 
         if (result?.ok) {
           const role = sessionStorage.getItem("authRole") || "TALENT";
-          router.push(role === "DIRECTOR" ? "/director/dashboard" : "/talent/dashboard");
+          // Talents go to payment page; directors go straight to dashboard
+          if (role === "TALENT") {
+            router.push("/auth/payment");
+          } else {
+            router.push("/director/dashboard");
+          }
         } else {
           setError("Account created. Please sign in.");
         }

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const { userIds, method, reason } = body;
+    const { userIds, reason } = body;
 
     // Validate input
     if (!Array.isArray(userIds) || userIds.length === 0) {
@@ -20,26 +20,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!method || !["ETH", "BTC"].includes(method.toUpperCase())) {
-      return NextResponse.json(
-        { error: "method must be ETH or BTC" },
-        { status: 400 }
-      );
-    }
-
-    const m = method.toUpperCase();
-    const reasonText = reason || "Bulk payment confirmation";
+    const reasonText = reason || "Payment confirmed by admin";
 
     // Fetch all users to be confirmed
     const users = await User.find({
       _id: { $in: userIds },
       role: "TALENT",
       paymentConfirmed: { $ne: true },
+      paymentMethod: { $exists: true, $ne: null },
     });
 
     if (users.length === 0) {
       return NextResponse.json(
-        { error: "No users found matching criteria" },
+        { error: "No users found with pending payments" },
         { status: 404 }
       );
     }
@@ -50,11 +43,14 @@ export async function POST(req: NextRequest) {
       const beforeState = {
         frozen: user.frozen,
         paymentConfirmed: user.paymentConfirmed,
+        paymentMethod: user.paymentMethod,
       };
 
       user.frozen = false;
       user.paymentConfirmed = true;
-      user.paymentMethod = m;
+      user.restrictionReason = null;
+      user.restrictionExpiresAt = null;
+      user.restrictedBy = null;
       user.paymentAt = new Date();
 
       await user.save();
@@ -65,7 +61,7 @@ export async function POST(req: NextRequest) {
         actorRole: "ADMIN",
         targetUserId: user._id.toString(),
         targetUserRole: "TALENT",
-        actionType: "PAYMENT_CONFIRMED_BULK",
+        actionType: "OTHER",
         beforeState,
         afterState: {
           frozen: user.frozen,
@@ -74,15 +70,16 @@ export async function POST(req: NextRequest) {
         },
         reason: reasonText,
         metadata: {
-          method: m,
+          paymentMethod: user.paymentMethod,
           bulkConfirmation: true,
-          totalCount: users.length,
+          totalConfirmed: users.length,
         },
       });
 
       results.push({
         userId: user._id.toString(),
         email: user.email,
+        paymentMethod: user.paymentMethod,
         success: true,
       });
     }

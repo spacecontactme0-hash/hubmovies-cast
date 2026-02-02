@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
-import { sendVerificationEmail } from "@/lib/email";
+import { sendOtpEmail } from "@/lib/email";
 import VerificationToken from "@/models/verification-token";
 import { randomUUID } from "crypto";
 
@@ -49,26 +49,39 @@ export async function POST(req: Request) {
       verificationTier: "BASIC",
     });
 
-    // Generate verification token
-    const token = randomUUID();
-    const expires = new Date();
-    expires.setHours(expires.getHours() + 24); // 24 hour expiry
+    // Generate 6-digit OTP and store token (same pattern as /api/auth/send-otp)
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const randomSuffix = Math.random().toString(36).slice(2, 8);
+    const token = `${otp}:${randomSuffix}`;
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minute expiry
 
-    await VerificationToken.create({
-      identifier: email,
-      token,
-      expires,
-    });
+    try {
+      await VerificationToken.create({ identifier: email, token, expires });
+    } catch (err: any) {
+      if (err.code === 11000) {
+        const altToken = `${otp}:${Math.random().toString(36).slice(2, 8)}`;
+        await VerificationToken.create({ identifier: email, token: altToken, expires });
+      } else {
+        console.error("Failed to create verification token:", err);
+        return NextResponse.json({ error: "Failed to create verification token" }, { status: 500 });
+      }
+    }
 
-    // Send verification email with callback URL that includes token
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email)}`;
-
-    await sendVerificationEmail(email, verificationUrl);
+    // Send OTP email (best-effort)
+    let emailSent = false;
+    try {
+      emailSent = await sendOtpEmail(email, otp, 10);
+    } catch (err) {
+      console.error("Failed to send OTP email:", err);
+      emailSent = false;
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Account created. Please check your email to verify your account.",
+      emailSent: !!emailSent,
+      message: emailSent
+        ? "Account created. Please check your email to verify your account."
+        : "Account created but verification email could not be sent. Please contact support or re-request verification.",
     });
   } catch (error: any) {
     console.error("Signup error:", error);

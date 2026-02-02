@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/user";
-import { sendVerificationEmail } from "@/lib/email";
+import { sendOtpEmail } from "@/lib/email";
+import VerificationToken from "@/models/verification-token";
 import { getUserId } from "@/lib/auth-helpers";
 
 /**
@@ -71,17 +72,29 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate verification URL using NextAuth's email provider pattern
-    // In a real implementation, you would generate a proper verification token
-    // For now, we'll use NextAuth's built-in email verification flow
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const verificationUrl = `${baseUrl}/auth/verify-email?email=${encodeURIComponent(email)}`;
+    // Generate 6-digit OTP and store token (align with /api/auth/send-otp behavior)
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const randomSuffix = Math.random().toString(36).slice(2, 8);
+    const token = `${otp}:${randomSuffix}`;
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Send verification email
     try {
-      await sendVerificationEmail(email, verificationUrl);
+      await VerificationToken.create({ identifier: email, token, expires });
+    } catch (err: any) {
+      if (err.code === 11000) {
+        const altToken = `${otp}:${Math.random().toString(36).slice(2, 8)}`;
+        await VerificationToken.create({ identifier: email, token: altToken, expires });
+      } else {
+        console.error("Failed to create verification token:", err);
+        // Proceed without failing — still return success message to avoid enumeration
+      }
+    }
+
+    // Send OTP email (best-effort)
+    try {
+      await sendOtpEmail(email, otp, 10);
     } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
+      console.error("Failed to send OTP email:", emailError);
       // Don't fail the request if email fails
     }
 
