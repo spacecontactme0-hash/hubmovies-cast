@@ -99,21 +99,7 @@ function PasswordLoginPage() {
             if (redirectUrl) {
               window.location.href = redirectUrl;
             } else if (userRole === "ADMIN") {
-              try {
-                // Test dashboard access before redirecting
-                const dashRes = await fetch("/admin/jobs");
-                if (dashRes.ok) {
-                  window.location.href = "/admin/jobs";
-                } else {
-                  console.error(`Admin dashboard fetch failed: ${dashRes.status}`);
-                  setError("Failed to access admin dashboard. Please refresh and try again.");
-                  setEstablishingSession(false);
-                }
-              } catch (err) {
-                console.error("Error testing admin dashboard access:", err);
-                setError("Failed to access admin dashboard. Please refresh and try again.");
-                setEstablishingSession(false);
-              }
+              window.location.href = "/admin/jobs";
             } else if (userRole === "DIRECTOR") {
               window.location.href = "/director/dashboard";
             } else if (userRole === "TALENT") {
@@ -141,21 +127,7 @@ function PasswordLoginPage() {
               if (redirectUrl) {
                 window.location.href = redirectUrl;
               } else if (userRole === "ADMIN") {
-                try {
-                  // Test dashboard access before redirecting
-                  const dashRes = await fetch("/admin/jobs");
-                  if (dashRes.ok) {
-                    window.location.href = "/admin/jobs";
-                  } else {
-                    console.error(`Admin dashboard fetch failed: ${dashRes.status}`);
-                    setError("Failed to access admin dashboard. Please refresh and try again.");
-                    setEstablishingSession(false);
-                  }
-                } catch (err) {
-                  console.error("Error testing admin dashboard access:", err);
-                  setError("Failed to access admin dashboard. Please refresh and try again.");
-                  setEstablishingSession(false);
-                }
+                window.location.href = "/admin/jobs";
               } else if (userRole === "DIRECTOR") {
                 window.location.href = "/director/dashboard";
               } else if (userRole === "TALENT") {
