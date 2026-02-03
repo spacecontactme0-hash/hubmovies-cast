@@ -19,6 +19,7 @@ import { getUserId } from "@/lib/auth-helpers";
  * - 404: User not found
  */
 export async function POST(req: Request) {
+  const traceId = `otp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   try {
     const body = await req.json();
     let email = body.email;
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
     }
 
     if (!email) {
+      console.error("[OTP] Email required but missing", { traceId });
       return NextResponse.json(
         { error: "Email is required" },
         { status: 400 }
@@ -66,6 +68,7 @@ export async function POST(req: Request) {
 
     // Check if already verified
     if (user.emailVerified) {
+      console.error("[OTP] Email already verified", { traceId, email });
       return NextResponse.json(
         { error: "Email is already verified" },
         { status: 400 }
@@ -85,16 +88,19 @@ export async function POST(req: Request) {
         const altToken = `${otp}:${Math.random().toString(36).slice(2, 8)}`;
         await VerificationToken.create({ identifier: email, token: altToken, expires });
       } else {
-        console.error("Failed to create verification token:", err);
+        console.error("[OTP] Failed to create verification token:", { traceId, email, err });
         // Proceed without failing — still return success message to avoid enumeration
       }
     }
 
     // Send OTP email (best-effort)
     try {
-      await sendOtpEmail(email, otp, 10);
+      const emailSent = await sendOtpEmail(email, otp, 10);
+      if (!emailSent) {
+        console.error("[OTP] Email not sent (sendOtpEmail returned false)", { traceId, email });
+      }
     } catch (emailError) {
-      console.error("Failed to send OTP email:", emailError);
+      console.error("[OTP] Failed to send OTP email:", { traceId, email, err: emailError });
       // Don't fail the request if email fails
     }
 
@@ -103,7 +109,7 @@ export async function POST(req: Request) {
       message: "If an account exists with this email, a verification link has been sent.",
     });
   } catch (error) {
-    console.error("Failed to resend verification email:", error);
+    console.error("[OTP] Failed to resend verification email:", { traceId, error });
     return NextResponse.json(
       { error: "Failed to resend verification email. Please try again." },
       { status: 500 }

@@ -14,10 +14,16 @@ interface EmailOptions {
  * Falls back gracefully if email service is not configured
  */
 export async function sendEmail({ to, subject, html }: EmailOptions): Promise<boolean> {
+  const context = {
+    to,
+    subject,
+    from: FROM_EMAIL,
+    hasApiKey: Boolean(process.env.RESEND_API_KEY),
+  };
   // If Resend API key is not configured, log and return false
   // This allows the app to work without email in development
   if (!process.env.RESEND_API_KEY) {
-    console.log("[Email] Service not configured. Would send:", { to, subject });
+    console.error("[Email] Service not configured. Missing RESEND_API_KEY.", context);
     return false;
   }
 
@@ -30,13 +36,13 @@ export async function sendEmail({ to, subject, html }: EmailOptions): Promise<bo
     });
 
     if (error) {
-      console.error("[Email] Failed:", error);
+      console.error("[Email] Resend error:", { ...context, error });
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error("[Email] Error:", error);
+    console.error("[Email] Resend exception:", { ...context, error });
     return false;
   }
 }
